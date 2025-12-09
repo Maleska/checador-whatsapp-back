@@ -121,7 +121,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
 async function sendMessage(to, msg) {
   try {
     await client.messages.create({
-      from: env.TWILIO_WHATSAPP_NUMBER,
+      from: process.env.TWILIO_WHATSAPP_NUMBER,
       to: `whatsapp:${to}`,
       body: msg
     });
