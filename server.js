@@ -121,7 +121,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
 async function sendMessage(to, msg) {
   try {
     await client.messages.create({
-      from: process.env.TWILIO_WHATSAPP_NUMBER,
+      from: env.TWILIO_WHATSAPP_NUMBER,
       to: `whatsapp:${to}`,
       body: msg
     });
@@ -151,5 +151,6 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
 // -----------------------------------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
+  console.log(process.env.TWILIO_WHATSAPP_NUMBER)
   console.log("Servidor Node corriendo en puerto", PORT);
 });
