@@ -40,20 +40,23 @@ app.post("/webhook-twilio", async (req, res) => {
   console.log("MENSAJE RECIBIDO:", body);
 
   // Buscar empleado
-  const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
+  // const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
+    const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
 
   if (!empleadoSnap.exists()) {
+    console.log("Número no registrado:", from);
     await sendMessage(from, "❌ Tu número no está registrado.");
     return res.sendStatus(200);
   }
 
   const empleado = empleadoSnap.val();
-
+  console.log("Empleado encontrado:", empleado.nombre);
   // -----------------------------------------------
   // PROCESAR MENSAJES DE TEXTO
   // -----------------------------------------------
   if (msgType === "text") {
     if (text === "entrada" || text === "salida") {
+      console.log(`Registrando ${text} para ${empleado.nombre}`);
       await registrar(empleado, from, text.toUpperCase());
       await sendMessage(from, `✅ Tu ${text} ha sido registrada.`);
       return res.sendStatus(200);
@@ -61,6 +64,7 @@ app.post("/webhook-twilio", async (req, res) => {
 
     await sendMessage(from, "⚠️ Envía *entrada* o *salida*.");
     return res.sendStatus(200);
+
   }
 
   // -----------------------------------------------
@@ -108,6 +112,7 @@ app.post("/webhook-twilio", async (req, res) => {
 // FUNCIONES
 // -----------------------------------------------------
 async function registrar(empleado, numero, tipo, extra = {}) {
+  console.log(`Registrando ${tipo} para ${empleado.nombre}`);
   await db.ref("checadas").push({
     numero,
     empleado: empleado.nombre,
@@ -120,6 +125,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
 
 async function sendMessage(to, msg) {
   try {
+    console.log("Enviando mensaje a", to, ":", msg);
     await client.messages.create({
       from: process.env.TWILIO_WHATSAPP_NUMBER,
       to: `whatsapp:${to}`,
