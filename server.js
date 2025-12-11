@@ -134,7 +134,7 @@ async function sendMessage(to, msg) {
       const message = await client.messages.create({
     body: msg,
     messagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID,
-    to: `whatsapp:${to}`,
+    to: `whatsapp:${to}`
   });
 
   } catch (e) {
