@@ -128,8 +128,7 @@ async function sendMessage(to, msg) {
     console.log("Enviando mensaje a", to, ":", msg);
     await client.messages.create({
       from: process.env.TWILIO_WHATSAPP_NUMBER,
-      //to: `whatsapp:${to}`,
-      to: `${to}`,
+      to: `whatsapp:${to}`,
       body: msg
     });
   } catch (e) {
