@@ -132,7 +132,10 @@ async function sendMessage(to, msg) {
       body: msg
     });
   } catch (e) {
-    console.error("Error enviando mensaje:", e);
+     console.log("Error enviando mensaje:", e.message);
+    console.log("Código:", e.code);
+    console.log("Más detalles:", e.moreInfo);
+    //console.error("Error enviando mensaje:", e);
   }
 }
 
