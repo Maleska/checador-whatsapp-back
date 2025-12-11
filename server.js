@@ -126,11 +126,17 @@ async function registrar(empleado, numero, tipo, extra = {}) {
 async function sendMessage(to, msg) {
   try {
     console.log("Enviando mensaje a", to, ":", msg);
-    await client.messages.create({
-      from: process.env.TWILIO_WHATSAPP_NUMBER,
-      to: `whatsapp:${to}`,
-      body: msg
-    });
+    // await client.messages.create({
+    //   from: process.env.TWILIO_WHATSAPP_NUMBER,
+    //   to: `whatsapp:${to}`,
+    //   body: msg
+    // });
+      const message = await client.messages.create({
+    body: msg,
+    messagingServiceSid: process.env.TWILIO_MESSAGING_SERVICE_SID,
+    to: `whatsapp:${to}`,
+  });
+
   } catch (e) {
      console.log("Error enviando mensaje:", e.message);
     console.log("Código:", e.code);
