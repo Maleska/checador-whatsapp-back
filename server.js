@@ -133,14 +133,16 @@ async function sendMessage(to, msg) {
     // });
       const message = await client.messages.create({
     body: msg,
-    messagingServiceSid: "MG1ec5de89cfd04aa48cd864f7adb4fe24",
+    from: process.env.TWILIO_WHATSAPP_NUMBER,
     to: `whatsapp:${to}`
-  });
+  }); 
 
   } catch (e) {
-     console.log("Error enviando mensaje:", e.message);
-    console.log("Código:", e.code);
-    console.log("Más detalles:", e.moreInfo);
+       console.log("ERROR Twilio:");
+    console.log("status:", e.status);
+    console.log("code:", e.code);
+    console.log("message:", e.message);
+    console.log("moreInfo:", e.moreInfo);
     //console.error("Error enviando mensaje:", e);
   }
 }
