@@ -113,13 +113,15 @@ app.post("/webhook-twilio", async (req, res) => {
 // -----------------------------------------------------
 async function registrar(empleado, numero, tipo, extra = {}) {
   console.log(`Registrando ${tipo} para ${empleado.nombre}`);
+  const fechaHora = new Date();
+  console.log(fechaHora.toLocaleString())
   await db.ref("checadas").push({
     numero,
     empleado: empleado.nombre,
     empresaId: empleado.empresaId,
     tipo,
     extra,
-    fecha: Date.now()
+      fecha: fechaHora.toLocaleString()
   });
 }
 
