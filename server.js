@@ -46,7 +46,7 @@ app.post("/webhook-twilio", async (req, res) => {
   if (!empleadoSnap.exists()) {
     console.log("Número no registrado:", from);
     await sendMessage(from, "❌ Tu número no está registrado.");
-    return res.sendStatus(200);
+    return res.sendStatus();
   }
 
   const empleado = empleadoSnap.val();
@@ -59,11 +59,11 @@ app.post("/webhook-twilio", async (req, res) => {
       console.log(`Registrando ${text} para ${empleado.nombre}`);
       await registrar(empleado, from, text.toUpperCase());
       await sendMessage(from, `✅ Tu ${text} ha sido registrada.`);
-      return res.sendStatus(200);
+      return res.sendStatus();
     }
 
     await sendMessage(from, "⚠️ Envía *entrada* o *salida*.");
-    return res.sendStatus(200);
+    return res.sendStatus();
 
   }
 
@@ -75,11 +75,11 @@ app.post("/webhook-twilio", async (req, res) => {
     const lng = parseFloat(body.Longitude);
 
     // Buscar empresa
-    const empresaSnap = await db.ref(`empresas/${empleado.empresaId}`).once("value");
+    const empresaSnap = await db.ref(`empresa/${empleado.empresaId}`).once("value");
 
     if (!empresaSnap.exists()) {
       await sendMessage(from, "❌ La empresa no tiene ubicación configurada.");
-      return res.sendStatus(200);
+      return res.sendStatus();
     }
 
     const empresa = empresaSnap.val();
@@ -91,7 +91,7 @@ app.post("/webhook-twilio", async (req, res) => {
         from,
         `❌ Estás fuera de rango.\nDistancia: ${distancia.toFixed(2)}m\nMáximo permitido: 80m`
       );
-      return res.sendStatus(200);
+      return res.sendStatus();
     }
 
     // Registrar ubicación válida
@@ -101,10 +101,10 @@ app.post("/webhook-twilio", async (req, res) => {
       from,
       `📍 Ubicación registrada.\nDistancia: ${distancia.toFixed(2)}m`
     );
-    return res.sendStatus(200);
+    return res.sendStatus();
   }
 
-  res.sendStatus(200);
+  res.sendStatus();
 });
 
 
@@ -114,14 +114,16 @@ app.post("/webhook-twilio", async (req, res) => {
 async function registrar(empleado, numero, tipo, extra = {}) {
   console.log(`Registrando ${tipo} para ${empleado.nombre}`);
   const fechaHora = new Date();
-  console.log(fechaHora.toLocaleString())
+  console.log(fechaHora.getFullYear(), fechaHora.getMonth() + 1, fechaHora.getDate(), fechaHora.getHours(), fechaHora.getMinutes(), fechaHora.getSeconds());
   await db.ref("checadas").push({
     numero,
     empleado: empleado.nombre,
     empresaId: empleado.empresaId,
     tipo,
     extra,
-      fecha: fechaHora.toLocaleString()
+    fecha: Date.now(),
+    dia:fechaHora.getFullYear()+'-'+ fechaHora.getMonth() + 1+'-'+ fechaHora.getDate(),
+    fechaHora:fechaHora.getHours() +':'+ fechaHora.getMinutes()+':'+ fechaHora.getSeconds()
   });
 }
 
