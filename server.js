@@ -124,12 +124,12 @@ async function registrar(empleado, numero, tipo, extra = {}) {
   await db.ref("checadas").push({
     numero,
     empleado: empleado.nombre,
-    empresaId: empleado.empresaId,
+    empresaId: empleado.empresaId,  
     tipo,
     extra,
     fecha: Date.now(),
     dia:fechaHora.getFullYear()+'-'+ (fechaHora.getMonth() + 1) +'-'+ fechaHora.getDate(),
-    fechaHora: serverTimestamp //hour +':'+ min +':'+ sec
+    fechaHora: hora //hour +':'+ min +':'+ sec
   });
 }
 
