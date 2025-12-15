@@ -129,7 +129,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
     extra,
     fecha: Date.now(),
     dia:fechaHora.getFullYear()+'-'+ (fechaHora.getMonth() + 1) +'-'+ fechaHora.getDate(),
-    fechaHora:timestampInSeconds//fechahora:  admin.database.ServerValue.TIMESTAMP // ✅ servidor Firebase
+    fechaHora:now//fechahora:  admin.database.ServerValue.TIMESTAMP // ✅ servidor Firebase
   });
 }
 
