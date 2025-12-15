@@ -3,7 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const twilio = require("twilio");
 const admin = require("firebase-admin");
-const hora = require("firebase-admin/database")
+
 
 // Inicializar Firebase Admin
 admin.initializeApp({
@@ -129,7 +129,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
     extra,
     fecha: Date.now(),
     dia:fechaHora.getFullYear()+'-'+ (fechaHora.getMonth() + 1) +'-'+ fechaHora.getDate(),
-    fechaHora: hora //hour +':'+ min +':'+ sec
+    fechahora: firebase.database.ServerValue.TIMESTAMP
   });
 }
 
