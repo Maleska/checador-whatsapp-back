@@ -120,7 +120,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
   const hour = fechaHora.getHours().toString().padStart(2, '0');
     const min = fechaHora.getMinutes().toString().padStart(2, '0');
     const sec = fechaHora.getSeconds().toString().padStart(2, '0');
-
+  const timestampInSeconds = Math.floor(Date.now() / 1000);
   await db.ref("checadas").push({
     numero,
     empleado: empleado.nombre,
@@ -129,7 +129,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
     extra,
     fecha: Date.now(),
     dia:fechaHora.getFullYear()+'-'+ (fechaHora.getMonth() + 1) +'-'+ fechaHora.getDate(),
-    fechahora:  admin.database.ServerValue.TIMESTAMP // ✅ servidor Firebase
+    fechaHora:timestampInSeconds//fechahora:  admin.database.ServerValue.TIMESTAMP // ✅ servidor Firebase
   });
 }
 
