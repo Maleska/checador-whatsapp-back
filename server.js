@@ -116,7 +116,9 @@ async function registrar(empleado, numero, tipo, extra = {}) {
   console.log(`Registrando ${tipo} para ${empleado.nombre}`);
   const fechaHora = new Date();
   console.log(fechaHora.getFullYear(), fechaHora.getMonth() + 1, fechaHora.getDate(), fechaHora.getHours(), fechaHora.getMinutes(), fechaHora.getSeconds());
-
+  const timestampInSeconds = Math.floor(Date.now() / 1000);
+  console.log(timestampInSeconds);
+  console.log(admin.database.ServerValue.TIMESTAMP);
   // const hour = fechaHora.getHours().toString().padStart(2, '0');
   //   const min = fechaHora.getMinutes().toString().padStart(2, '0');
   //   const sec = fechaHora.getSeconds().toString().padStart(2, '0');
