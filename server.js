@@ -62,11 +62,11 @@ app.post("/webhook-twilio", async (req, res) => {
       console.log(`Registrando ${text} para ${empleado.nombre}`);
       await registrar(empleado, from, text.toUpperCase());
       await sendMessage(from, `✅ Tu ${text} ha sido registrada.`);
-      return res.sendStatus();
+      return res.sendStatus(200);
     }
 
-    await sendMessage(from, "⚠️ Envía *entrada* o *salida*.");
-    return res.sendStatus();
+    // await sendMessage(from, "⚠️ Envía *entrada* o *salida*.");
+    // return res.sendStatus(200);
 
   }
 
@@ -138,7 +138,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
     extra,
     fecha: Date.now(),
     dia: fechaHora.getFullYear()+'-'+ (fechaHora.getMonth() + 1) +'-'+ fechaHora.getDate(),
-    fechaHora:timestampInSeconds//fechahora:  admin.database.ServerValue.TIMESTAMP // ✅ servidor Firebase
+    fechaHora:horaGDL.split(',')[1]//fechahora:  admin.database.ServerValue.TIMESTAMP // ✅ servidor Firebase
   });
 }
 
