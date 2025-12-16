@@ -117,10 +117,10 @@ async function registrar(empleado, numero, tipo, extra = {}) {
   const fechaHora = new Date();
   console.log(fechaHora.getFullYear(), fechaHora.getMonth() + 1, fechaHora.getDate(), fechaHora.getHours(), fechaHora.getMinutes(), fechaHora.getSeconds());
 
-  const hour = fechaHora.getHours().toString().padStart(2, '0');
-    const min = fechaHora.getMinutes().toString().padStart(2, '0');
-    const sec = fechaHora.getSeconds().toString().padStart(2, '0');
-  const timestampInSeconds = Math.floor(Date.now() / 1000);
+  // const hour = fechaHora.getHours().toString().padStart(2, '0');
+  //   const min = fechaHora.getMinutes().toString().padStart(2, '0');
+  //   const sec = fechaHora.getSeconds().toString().padStart(2, '0');
+  // const timestampInSeconds = Math.floor(Date.now() / 1000);
   await db.ref("checadas").push({
     numero,
     empleado: empleado.nombre,
@@ -128,8 +128,8 @@ async function registrar(empleado, numero, tipo, extra = {}) {
     tipo,
     extra,
     fecha: Date.now(),
-    dia:fechaHora.getFullYear()+'-'+ (fechaHora.getMonth() + 1) +'-'+ fechaHora.getDate(),
-    fechaHora:now//fechahora:  admin.database.ServerValue.TIMESTAMP // ✅ servidor Firebase
+    dia: fechaHora.getFullYear()+'-'+ (fechaHora.getMonth() + 1) +'-'+ fechaHora.getDate(),
+    fechaHora:admin.database.ServerValue.TIMESTAMP//fechahora:  admin.database.ServerValue.TIMESTAMP // ✅ servidor Firebase
   });
 }
 
