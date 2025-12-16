@@ -121,7 +121,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
   const timestampInSeconds = Math.floor(Date.now() / 1000);
   console.log(timestampInSeconds);
 
-  const fecha = new Date(timestampInSeconds);
+  const fecha = new Date();
   const horaGDL = fecha.toLocaleString("es-MX", {
     timeZone: "America/Mexico_City"
   });
@@ -138,7 +138,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
     extra,
     fecha: Date.now(),
     dia: fechaHora.getFullYear()+'-'+ (fechaHora.getMonth() + 1) +'-'+ fechaHora.getDate(),
-    fechaHora:admin.database.ServerValue.TIMESTAMP//fechahora:  admin.database.ServerValue.TIMESTAMP // ✅ servidor Firebase
+    fechaHora:timestampInSeconds//fechahora:  admin.database.ServerValue.TIMESTAMP // ✅ servidor Firebase
   });
 }
 
