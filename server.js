@@ -46,7 +46,7 @@ app.post("/webhook-twilio", async (req, res) => {
   const text = body.Body ? body.Body.toLowerCase().trim() : "";
 
   console.log("MENSAJE RECIBIDO:", body);
-
+  console.log(from);
   // Buscar empleado por número
   const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
 
@@ -70,6 +70,7 @@ app.post("/webhook-twilio", async (req, res) => {
       return res.sendStatus(200);
     }
 
+    console.log("envio de mensaje de entrada o salida");
     await sendMessage(from, "⚠️ Envía *entrada* o *salida* o comparte tu ubicación.");
     return res.sendStatus(200);
   }
