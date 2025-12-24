@@ -51,6 +51,7 @@ app.post("/webhook-twilio", async (req, res) => {
   const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
 
   if (!empleadoSnap.exists()) {
+    console.log("❌ Tu número no está registrado.");
     await sendMessage(from, "❌ Tu número no está registrado.");
     return res.sendStatus(200);
   }
@@ -72,7 +73,7 @@ app.post("/webhook-twilio", async (req, res) => {
     await sendMessage(from, "⚠️ Envía *entrada* o *salida* o comparte tu ubicación.");
     return res.sendStatus(200);
   }
-
+  console.log("Iniciamos la ubicación");
   // -----------------------------------------------
   // UBICACIÓN
   // -----------------------------------------------
@@ -81,9 +82,10 @@ app.post("/webhook-twilio", async (req, res) => {
     const lat = parseFloat(body.Latitude);
     const lng = parseFloat(body.Longitude);
     const accuracy = body.Accuracy ? parseFloat(body.Accuracy) : null;
-
+  console.log("Ubicación del usuario lat:" +lat +" y lng" +lng );
     // Validar coordenadas
     if (isNaN(lat) || isNaN(lng)) {
+       console.log("❌ Ubicación inválida. Intenta de nuevo.");
       await sendMessage(from, "❌ Ubicación inválida. Intenta de nuevo.");
       return res.sendStatus(200);
     }
@@ -97,10 +99,12 @@ app.post("/webhook-twilio", async (req, res) => {
       return res.sendStatus(200);
     }
 
+    console.log("Toma valores de la empresa");
     // Obtener empresa
     const empresaSnap = await db.ref(`empresa/${empleado.empresaId}`).once("value");
 
     if (!empresaSnap.exists()) {
+         console.log("❌ La empresa no tiene ubicación configurada.");
       await sendMessage(from, "❌ La empresa no tiene ubicación configurada.");
       return res.sendStatus(200);
     }
@@ -108,17 +112,20 @@ app.post("/webhook-twilio", async (req, res) => {
     const empresa = empresaSnap.val();
 
     if (!empresa.lat || !empresa.lng) {
+      console.log("❌ Coordenadas de la empresa inválidas.");
       await sendMessage(from, "❌ Coordenadas de la empresa inválidas.");
       return res.sendStatus(200);
     }
 
     // Calcular distancia
+    console.log("Inicia a calcular distancia");
     const distancia = calcularDistancia(lat, lng, empresa.lat, empresa.lng);
 
     console.log(`Distancia: ${distancia} metros`);
 
     // ❌ FUERA DE RANGO
     if (distancia > 80) {
+      console.log("Fuera del rango de distancia")
       await sendMessage(
         from,
         `❌ Estás fuera del rango permitido.\n\n📏 Distancia actual: ${distancia.toFixed(2)} m\n📍 Máximo permitido: 80 m\n\n👉 Acércate más a la empresa para registrar tu checada.`
@@ -126,6 +133,7 @@ app.post("/webhook-twilio", async (req, res) => {
       return res.sendStatus(200);
     }
 
+    console.log("✅ REGISTRAR CHECADA");
     // ✅ REGISTRAR CHECADA
     await registrar(empleado, from, "UBICACION", {
       lat,
@@ -134,15 +142,78 @@ app.post("/webhook-twilio", async (req, res) => {
       accuracy
     });
 
+    console.log("✅ Envia mensaje de validación");
     await sendMessage(
       from,
       `✅ Ubicación validada.\n📏 Distancia: ${distancia.toFixed(2)} m`
     );
 
-    return res.sendStatus(200);
+    return res.sendStatus();
   }
 
-  res.sendStatus(200);
+  res.sendStatus();
+});
+
+// ===============================
+// ENDPOINT DE PRUEBA LOCAL
+// ===============================
+app.post('/debug/checada', async (req, res) => {
+  try {
+    const { numero, lat, lng, tipo } = req.body;
+
+    console.log('🧪 DEBUG REQUEST:', req.body);
+
+    if (!numero || !lat || !lng) {
+      return res.status(400).json({ error: 'Faltan datos' });
+    }
+
+    // Buscar empleado
+    const empleadoSnap = await db.ref(`empleados/${numero}`).once('value');
+    if (!empleadoSnap.exists()) {
+      return res.status(404).json({ error: 'Empleado no registrado' });
+    }
+
+    const empleado = empleadoSnap.val();
+
+    // Buscar empresa
+    const empresaSnap = await db.ref(`empresa/${empleado.empresaId}`).once('value');
+    if (!empresaSnap.exists()) {
+      return res.status(404).json({ error: 'Empresa sin ubicación' });
+    }
+
+    const empresa = empresaSnap.val();
+
+    // Calcular distancia
+    const distancia = calcularDistancia(lat, lng, empresa.lat, empresa.lng);
+
+    console.log(`📏 Distancia calculada: ${distancia.toFixed(2)} m`);
+
+    // VALIDACIÓN DE RADIO
+    if (distancia > 80) {
+      return res.status(403).json({
+        ok: false,
+        message: 'Debes acercarte más a la empresa',
+        distancia: distancia.toFixed(2)
+      });
+    }
+
+    // Registrar checada
+    await registrar(empleado, numero, tipo || 'TEST', {
+      lat,
+      lng,
+      distancia
+    });
+
+    return res.json({
+      ok: true,
+      message: 'Checada registrada correctamente',
+      distancia: distancia.toFixed(2)
+    });
+
+  } catch (err) {
+    console.error('❌ ERROR DEBUG:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // -----------------------------------------------
