@@ -61,9 +61,6 @@ app.post("/webhook-twilio", async (req, res) => {
   const empleado = empleadoSnap.val();
   console.log("Empleado:", empleado.nombre);
 
-  // -----------------------------------------------
-  // MENSAJES DE TEXTO
-  // -----------------------------------------------
   if (msgType === "text") {
 
     if (text === "entrada" || text === "salida") {
@@ -77,9 +74,7 @@ app.post("/webhook-twilio", async (req, res) => {
     return res.sendStatus(200);
   }
   console.log("Iniciamos la ubicación");
-  // -----------------------------------------------
-  // UBICACIÓN
-  // -----------------------------------------------
+
   if (msgType === "location") {
 
     const lat = parseFloat(body.Latitude);
