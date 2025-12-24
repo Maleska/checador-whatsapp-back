@@ -62,7 +62,7 @@ app.post("/webhook-twilio", async (req, res) => {
       console.log(`Registrando ${text} para ${empleado.nombre}`);
       await registrar(empleado, from, text.toUpperCase());
       await sendMessage(from, `✅ Tu ${text} ha sido registrada.`);
-      return res.sendStatus(200);
+      return res.sendStatus();
     }
 
     // await sendMessage(from, "⚠️ Envía *entrada* o *salida*.");
@@ -76,6 +76,22 @@ app.post("/webhook-twilio", async (req, res) => {
   if (msgType === "location") {
     const lat = parseFloat(body.Latitude);
     const lng = parseFloat(body.Longitude);
+     const accuracy = body.Accuracy ? parseFloat(body.Accuracy) : null;
+
+     // Validar coordenadas
+    if (isNaN(lat) || isNaN(lng)) {
+      await sendMessage(from, "❌ Ubicación inválida. Intenta de nuevo.");
+      return res.sendStatus();
+    }
+
+    // 🔒 Anti GPS impreciso (opcional)
+    if (accuracy && accuracy > 40) {
+      await sendMessage(
+        from,
+        `❌ GPS impreciso (${accuracy} m).\nActiva ubicación precisa e inténtalo nuevamente.`
+      );
+      return res.sendStatus();
+    }
 
     // Buscar empresa
     const empresaSnap = await db.ref(`empresa/${empleado.empresaId}`).once("value");
@@ -86,8 +102,14 @@ app.post("/webhook-twilio", async (req, res) => {
     }
 
     const empresa = empresaSnap.val();
+    if (!empresa.lat || !empresa.lng) {
+      await sendMessage(from, "❌ Coordenadas de la empresa inválidas.");
+      return res.sendStatus();
+    }
 
     const distancia = calcularDistancia(lat, lng, empresa.lat, empresa.lng);
+ 
+    console.log(`Distancia: ${distancia} metros`);
 
     if (distancia > 80) {
       await sendMessage(
@@ -97,8 +119,16 @@ app.post("/webhook-twilio", async (req, res) => {
       return res.sendStatus();
     }
 
+     // ✅ REGISTRAR CHECADA
     // Registrar ubicación válida
-    await registrar(empleado, from, "UBICACIÓN", { lat, lng, distancia });
+    //await registrar(empleado, from, "UBICACIÓN", { lat, lng, distancia });
+        // ✅ REGISTRAR CHECADA
+      await registrar(empleado, from, "UBICACION", {
+        lat,
+        lng,
+        distancia: distancia.toFixed(2),
+        accuracy
+      });
 
     await sendMessage(
       from,
