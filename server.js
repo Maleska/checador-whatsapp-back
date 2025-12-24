@@ -48,6 +48,7 @@ app.post("/webhook-twilio", async (req, res) => {
   console.log("MENSAJE RECIBIDO:", body);
   console.log(from);
   console.log(msgType);
+  console.log(text);
   // Buscar empleado por número
   const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
 
