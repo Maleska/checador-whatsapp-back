@@ -39,7 +39,7 @@ app.use(bodyParser.json());
 // WEBHOOK TWILIO
 // -----------------------------------------------
 app.post("/webhook-twilio", async (req, res) => {
-
+try {
   const body = req.body;
   const from = body.From.replace("whatsapp:", "");
   const msgType = body.MessageType;
@@ -150,6 +150,9 @@ app.post("/webhook-twilio", async (req, res) => {
   }
 
   res.sendStatus();
+}catch(error){
+  console.log(error.message);
+}
 });
 
 // ===============================
