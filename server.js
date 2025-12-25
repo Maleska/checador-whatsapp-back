@@ -245,7 +245,7 @@ async function registrar(empleado, numero, tipo, extra = {}) {
 // -----------------------------------------------
 async function sendMessage(to, msg) {
   try {
-    await client.messages.create({
+     const message = await client.messages.create({
       body: msg,
       from: process.env.TWILIO_WHATSAPP_NUMBER,
       to: `whatsapp:${to}`
