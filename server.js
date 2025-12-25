@@ -47,7 +47,6 @@ try {
 
   console.log("MENSAJE RECIBIDO:", body);
   console.log(from);
-  console.log(msgType);
   console.log(text);
   // Buscar empleado por número
   const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
@@ -60,10 +59,12 @@ try {
 
   const empleado = empleadoSnap.val();
   console.log("Empleado:", empleado.nombre);
+  console.log(msgType);
 
   if (msgType === "text") {
-
+    console.log("Entro");
     if (text === "entrada" || text === "salida") {
+      console.log("Entrada o salida");
       await registrar(empleado, from, text.toUpperCase());
       await sendMessage(from, `✅ Tu ${text} ha sido registrada.`);
       return res.sendStatus(200);
