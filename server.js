@@ -70,9 +70,9 @@ try {
       return res.sendStatus(200);
     }
 
-    console.log("envio de mensaje de entrada o salida");
-    await sendMessage(from, "⚠️ Envía *entrada* o *salida* o comparte tu ubicación.");
-    return res.sendStatus(200);
+    // console.log("envio de mensaje de entrada o salida");
+    // await sendMessage(from, "⚠️ Envía *entrada* o *salida* o comparte tu ubicación.");
+    // return res.sendStatus(200);
   }
   console.log("Iniciamos la ubicación");
 
@@ -244,14 +244,26 @@ async function registrar(empleado, numero, tipo, extra = {}) {
 // ENVIAR WHATSAPP
 // -----------------------------------------------
 async function sendMessage(to, msg) {
-  try {
-     const message = await client.messages.create({
-      body: msg,
-      from: process.env.TWILIO_WHATSAPP_NUMBER,
-      to: `whatsapp:${to}`
-    });
+try {
+    console.log("Enviando mensaje a", to, ":", msg);
+    // await client.messages.create({
+    //   from: process.env.TWILIO_WHATSAPP_NUMBER,
+    //   to: `whatsapp:${to}`,
+    //   body: msg
+    // });
+      const message = await client.messages.create({
+    body: msg,
+    from: process.env.TWILIO_WHATSAPP_NUMBER,
+    to: `whatsapp:${to}`
+  }); 
+
   } catch (e) {
-    console.error("Error Twilio:", e.message);
+       console.log("ERROR Twilio:");
+    console.log("status:", e.status);
+    console.log("code:", e.code);
+    console.log("message:", e.message);
+    console.log("moreInfo:", e.moreInfo);
+    //console.error("Error enviando mensaje:", e);
   }
 }
 
