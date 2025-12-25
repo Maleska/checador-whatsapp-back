@@ -75,12 +75,12 @@ try {
   }
   console.log("Iniciamos la ubicación");
 
-  if (msgType === "location") {
+ /* if (msgType === "location") {
 
     const lat = parseFloat(body.Latitude);
     const lng = parseFloat(body.Longitude);
     const accuracy = body.Accuracy ? parseFloat(body.Accuracy) : null;
-  console.log("Ubicación del usuario lat:" +lat +" y lng" +lng );
+    console.log("Ubicación del usuario lat:" +lat +" y lng" +lng );
     // Validar coordenadas
     if (isNaN(lat) || isNaN(lng)) {
        console.log("❌ Ubicación inválida. Intenta de nuevo.");
@@ -147,7 +147,7 @@ try {
     );
 
     return res.sendStatus();
-  }
+  }*/
 
   res.sendStatus();
 }catch(error){
