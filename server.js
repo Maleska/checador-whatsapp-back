@@ -160,7 +160,7 @@ app.post("/webhook-twilio", async (req, res) => {
 
         const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}`;
         console.log("Enlace:", link);
-
+        console.log(from);
         await sendMessage(
         from,
         `📍 Abre el enlace para continuar tu ${text} (30s):\n${link}`
@@ -269,7 +269,7 @@ app.post("/webhook-twilio", async (req, res) => {
 
     app.post('/checkin', /*upload.single('selfie'),*/ async (req, res) => {
       try {
-
+        console.log("CHECKIN REQUEST:", req.body);
         const { token, lat, lng, accuracy } = req.body;
         //if (!req.file) return res.status(403).json({ mensaje: 'Selfie obligatoria' });
         if (accuracy > 30) return res.status(403).json({ mensaje: 'GPS impreciso' });
