@@ -5,8 +5,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const twilio = require("twilio");
 const admin = require("firebase-admin");
-const crypto = require('crypto');
-const multer = require('multer');
+const crypto = require("crypto");
 
 // -----------------------------------------------
 // FIREBASE ADMIN
@@ -41,7 +40,9 @@ app.use(bodyParser.json());
 // Utils
 //------------------------------------------------
 function generarToken() {
+  console.log("Generando token");
   return crypto.randomBytes(16).toString('hex');
+
 }
 
 // -----------------------------------------------
@@ -148,21 +149,25 @@ app.post("/webhook-twilio", async (req, res) => {
 
         const token = generarToken();
 
-
         await db.ref(`tokens/${token}`).set({
           numero: from,
           tipo: text.toUpperCase(),
           empresaId: empleado.empresaId,
           expira: Date.now() + 30000
         });
-
+        console.log("Token generado:", token);
 
         const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}`;
-        await client.messages.create({
-          from: process.env.TWILIO_WHATSAPP_NUMBER,
-          to: `whatsapp:${from}`,
-          body: `📍 Abre el enlace para continuar tu ${text} (30s):\n${link}`
-        });
+        
+        await sendWhatsApp(
+        from,
+        `📍 Abre el enlace para continuar tu ${text} (30s):\n${link}`
+      );
+        // await client.messages.create({
+        //   from: process.env.TWILIO_WHATSAPP_NUMBER,
+        //   to: `whatsapp:${from}`,
+        //   body: `📍 Abre el enlace para continuar tu ${text} (30s):\n${link}`
+        // });
 
         //await registrar(empleado, from, text.toUpperCase());
         //await sendMessage(from, `✅ Tu ${text} ha sido registrada.`);
@@ -344,6 +349,17 @@ app.post("/webhook-twilio", async (req, res) => {
       }
       res.json({ mensaje: "Checada registrada" });
     });
+
+    // -----------------------------------------------
+// ENVIAR WHATSAPP
+// -----------------------------------------------
+    async function sendWhatsApp(to, msg) {
+      await client.messages.create({
+        from: process.env.TWILIO_WHATSAPP_NUMBER,
+        to: `whatsapp:${to}`,
+        body: msg
+      });
+    }
 
 // ===============================
 // ENDPOINT DE PRUEBA LOCAL
