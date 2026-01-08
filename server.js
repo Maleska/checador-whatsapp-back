@@ -121,6 +121,7 @@ app.get('/webhook-twilio', (req, res) => {
 // -----------------------------------------------
 app.post("/webhook-twilio", async (req, res) => {
   try {
+      res.sendStatus(200); // RESPUESTA INMEDIATA
     const body = req.body;
     const from = body.From.replace("whatsapp:", "");
     const msgType = body.MessageType;
@@ -290,7 +291,8 @@ app.post("/webhook-twilio", async (req, res) => {
 
     //res.sendStatus();
   } catch (error) {
-    console.log(error.message);
+    console.error("❌ WEBHOOK ERROR:", error);
+  return res.sendStatus(200); // ← CRÍTICO
   }
 });
 
