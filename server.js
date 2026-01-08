@@ -175,6 +175,86 @@ app.post("/webhook-twilio", async (req, res) => {
     }
     console.log("Iniciamos la ubicación");
 
+    /* if (msgType === "location") {
+   
+       const lat = parseFloat(body.Latitude);
+       const lng = parseFloat(body.Longitude);
+       const accuracy = body.Accuracy ? parseFloat(body.Accuracy) : null;
+       console.log("Ubicación del usuario lat:" +lat +" y lng" +lng );
+       // Validar coordenadas
+       if (isNaN(lat) || isNaN(lng)) {
+          console.log("❌ Ubicación inválida. Intenta de nuevo.");
+         await sendMessage(from, "❌ Ubicación inválida. Intenta de nuevo.");
+         return res.sendStatus(200);
+       }
+   
+       // 🔒 Anti GPS impreciso (opcional)
+       if (accuracy && accuracy > 40) {
+         await sendMessage(
+           from,
+           `❌ GPS impreciso (${accuracy} m).\nActiva ubicación precisa e inténtalo nuevamente.`
+         );
+         return res.sendStatus(200);
+       }
+   
+       console.log("Toma valores de la empresa");
+       // Obtener empresa
+       const empresaSnap = await db.ref(`empresa/${empleado.empresaId}`).once("value");
+   
+       if (!empresaSnap.exists()) {
+            console.log("❌ La empresa no tiene ubicación configurada.");
+         await sendMessage(from, "❌ La empresa no tiene ubicación configurada.");
+         return res.sendStatus(200);
+       }
+   
+       const empresa = empresaSnap.val();
+   
+       if (!empresa.lat || !empresa.lng) {
+         console.log("❌ Coordenadas de la empresa inválidas.");
+         await sendMessage(from, "❌ Coordenadas de la empresa inválidas.");
+         return res.sendStatus(200);
+       }
+   
+       // Calcular distancia
+       console.log("Inicia a calcular distancia");
+       const distancia = calcularDistancia(lat, lng, empresa.lat, empresa.lng);
+   
+       console.log(`Distancia: ${distancia} metros`);
+   
+       // ❌ FUERA DE RANGO
+       if (distancia > 80) {
+         console.log("Fuera del rango de distancia")
+         await sendMessage(
+           from,
+           `❌ Estás fuera del rango permitido.\n\n📏 Distancia actual: ${distancia.toFixed(2)} m\n📍 Máximo permitido: 80 m\n\n👉 Acércate más a la empresa para registrar tu checada.`
+         );
+         return res.sendStatus(200);
+       }
+   
+       console.log("✅ REGISTRAR CHECADA");
+       // ✅ REGISTRAR CHECADA
+       await registrar(empleado, from, "UBICACION", {
+         lat,
+         lng,
+         distancia: distancia.toFixed(2),
+         accuracy
+       });
+   
+       console.log("✅ Envia mensaje de validación");
+       await sendMessage(
+         from,
+         `✅ Ubicación validada.\n📏 Distancia: ${distancia.toFixed(2)} m`
+       );
+   
+       return res.sendStatus();
+     }*/
+
+    //res.sendStatus();
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
     // -----------------------------------------------
     // Checking location messages
     // -----------------------------------------------
@@ -264,86 +344,6 @@ app.post("/webhook-twilio", async (req, res) => {
       }
       res.json({ mensaje: "Checada registrada" });
     });
-
-    /* if (msgType === "location") {
-   
-       const lat = parseFloat(body.Latitude);
-       const lng = parseFloat(body.Longitude);
-       const accuracy = body.Accuracy ? parseFloat(body.Accuracy) : null;
-       console.log("Ubicación del usuario lat:" +lat +" y lng" +lng );
-       // Validar coordenadas
-       if (isNaN(lat) || isNaN(lng)) {
-          console.log("❌ Ubicación inválida. Intenta de nuevo.");
-         await sendMessage(from, "❌ Ubicación inválida. Intenta de nuevo.");
-         return res.sendStatus(200);
-       }
-   
-       // 🔒 Anti GPS impreciso (opcional)
-       if (accuracy && accuracy > 40) {
-         await sendMessage(
-           from,
-           `❌ GPS impreciso (${accuracy} m).\nActiva ubicación precisa e inténtalo nuevamente.`
-         );
-         return res.sendStatus(200);
-       }
-   
-       console.log("Toma valores de la empresa");
-       // Obtener empresa
-       const empresaSnap = await db.ref(`empresa/${empleado.empresaId}`).once("value");
-   
-       if (!empresaSnap.exists()) {
-            console.log("❌ La empresa no tiene ubicación configurada.");
-         await sendMessage(from, "❌ La empresa no tiene ubicación configurada.");
-         return res.sendStatus(200);
-       }
-   
-       const empresa = empresaSnap.val();
-   
-       if (!empresa.lat || !empresa.lng) {
-         console.log("❌ Coordenadas de la empresa inválidas.");
-         await sendMessage(from, "❌ Coordenadas de la empresa inválidas.");
-         return res.sendStatus(200);
-       }
-   
-       // Calcular distancia
-       console.log("Inicia a calcular distancia");
-       const distancia = calcularDistancia(lat, lng, empresa.lat, empresa.lng);
-   
-       console.log(`Distancia: ${distancia} metros`);
-   
-       // ❌ FUERA DE RANGO
-       if (distancia > 80) {
-         console.log("Fuera del rango de distancia")
-         await sendMessage(
-           from,
-           `❌ Estás fuera del rango permitido.\n\n📏 Distancia actual: ${distancia.toFixed(2)} m\n📍 Máximo permitido: 80 m\n\n👉 Acércate más a la empresa para registrar tu checada.`
-         );
-         return res.sendStatus(200);
-       }
-   
-       console.log("✅ REGISTRAR CHECADA");
-       // ✅ REGISTRAR CHECADA
-       await registrar(empleado, from, "UBICACION", {
-         lat,
-         lng,
-         distancia: distancia.toFixed(2),
-         accuracy
-       });
-   
-       console.log("✅ Envia mensaje de validación");
-       await sendMessage(
-         from,
-         `✅ Ubicación validada.\n📏 Distancia: ${distancia.toFixed(2)} m`
-       );
-   
-       return res.sendStatus();
-     }*/
-
-    //res.sendStatus();
-  } catch (error) {
-    console.log(error.message);
-  }
-});
 
 // ===============================
 // ENDPOINT DE PRUEBA LOCAL
