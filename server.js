@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const twilio = require("twilio");
 const admin = require("firebase-admin");
 const crypto = require("crypto");
+const { ConversationRelaySession } = require("twilio/lib/twiml/VoiceResponse");
 
 // -----------------------------------------------
 // FIREBASE ADMIN
@@ -158,8 +159,9 @@ app.post("/webhook-twilio", async (req, res) => {
         console.log("Token generado:", token);
 
         const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}`;
-        
-        await sendWhatsApp(
+        console.log("Enlace:", link);
+
+        await sendMessage(
         from,
         `📍 Abre el enlace para continuar tu ${text} (30s):\n${link}`
       );
