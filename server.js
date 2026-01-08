@@ -94,6 +94,26 @@ function detectarTurno(hora, turnos = {}) {
 }
 
 // -----------------------------------------------
+// META WEBHOOK VERIFICATION (GET)
+// -----------------------------------------------
+app.get('/webhook-twilio', (req, res) => {
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode === 'subscribe' && token === process.env.META_VERIFY_TOKEN) {
+    console.log('✅ Webhook de Meta verificado');
+    return res.status(200).send(challenge);
+  }
+
+  console.log('❌ Verificación Meta fallida');
+  return res.sendStatus(403);
+});
+
+
+
+
+// -----------------------------------------------
 // WEBHOOK TWILIO
 // -----------------------------------------------
 app.post("/webhook-twilio", async (req, res) => {
