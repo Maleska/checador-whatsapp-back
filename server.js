@@ -9,11 +9,7 @@ const crypto = require("crypto");
 const { ConversationRelaySession } = require("twilio/lib/twiml/VoiceResponse");
 const cors = require('cors');
 
-app.use(cors({
-  origin: '*', // puedes restringir luego
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
-}));
+
 // -----------------------------------------------
 // FIREBASE ADMIN
 // -----------------------------------------------
@@ -43,6 +39,12 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+
+app.use(cors({
+  origin: '*', // puedes restringir luego
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
 //------------------------------------------------
 // Utils
 //------------------------------------------------
