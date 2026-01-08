@@ -7,7 +7,13 @@ const twilio = require("twilio");
 const admin = require("firebase-admin");
 const crypto = require("crypto");
 const { ConversationRelaySession } = require("twilio/lib/twiml/VoiceResponse");
+const cors = require('cors');
 
+app.use(cors({
+  origin: '*', // puedes restringir luego
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
 // -----------------------------------------------
 // FIREBASE ADMIN
 // -----------------------------------------------
@@ -107,7 +113,7 @@ app.post("/webhook-twilio", async (req, res) => {
     if (!empleadoSnap.exists()) {
       console.log("❌ Tu número no está registrado.");
       await sendMessage(from, "❌ Tu número no está registrado.");
-      return res.sendStatus();
+       return res.sendStatus(200);
     }
 
     // ---- FLUJO JUSTIFICACIÓN ----
@@ -161,6 +167,7 @@ app.post("/webhook-twilio", async (req, res) => {
         const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}`;
         console.log("Enlace:", link);
         console.log(from);
+
         await sendMessage(
         from,
         `📍 Abre el enlace para continuar tu ${text} (30s):\n${link}`
@@ -173,7 +180,7 @@ app.post("/webhook-twilio", async (req, res) => {
 
         //await registrar(empleado, from, text.toUpperCase());
         //await sendMessage(from, `✅ Tu ${text} ha sido registrada.`);
-        return res.sendStatus();
+        return res.sendStatus(200);
       }
 
       // console.log("envio de mensaje de entrada o salida");
