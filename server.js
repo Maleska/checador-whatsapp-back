@@ -506,6 +506,21 @@ async function sendMessage(to, msg) {
   }
 }
 
+app.get("/test-whatsapp", async (req, res) => {
+  try {
+    const msg = await client.messages.create({
+      from: process.env.TWILIO_WHATSAPP_NUMBER,
+      to: "whatsapp:+5213330188655",
+      body: "🧪 Prueba Twilio desde Render"
+    });
+
+    console.log("✅ SID:", msg.sid);
+    res.send("OK");
+  } catch (e) {
+    console.error("❌ TWILIO ERROR:", e.message);
+    res.status(500).send(e.message);
+  }
+}); 
 
 
 // -----------------------------------------------
