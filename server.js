@@ -139,7 +139,8 @@ app.post("/webhook-twilio", async (req, res) => {
     if (!empleadoSnap.exists()) {
       console.log("❌ Tu número no está registrado.");
       await sendMessage(from, "❌ Tu número no está registrado.");
-       return res.sendStatus(200);
+       //return res.sendStatus(200);
+       return;
     }
 
     // ---- FLUJO JUSTIFICACIÓN ----
@@ -160,7 +161,8 @@ app.post("/webhook-twilio", async (req, res) => {
           await db.ref(`sesiones/${from}`).remove();
           await sendWhatsApp(from, "✅ Justificación de salida registrada.");
         }
-        return res.sendStatus(200);
+        //return res.sendStatus(200);
+        return;
       }
 
       if (s.paso === "AUTORIZADO") {
@@ -169,7 +171,8 @@ app.post("/webhook-twilio", async (req, res) => {
 
         await db.ref(`sesiones/${from}`).remove();
         await sendWhatsApp(from, "✅ Justificación completa. Gracias.");
-        return res.sendStatus(200);
+        //return res.sendStatus(200);
+        return;
       }
     }
 
@@ -206,7 +209,8 @@ app.post("/webhook-twilio", async (req, res) => {
 
         //await registrar(empleado, from, text.toUpperCase());
         //await sendMessage(from, `✅ Tu ${text} ha sido registrada.`);
-        return res.sendStatus(200);
+       // return res.sendStatus(200);
+       return;
       }
 
       // console.log("envio de mensaje de entrada o salida");
@@ -292,7 +296,7 @@ app.post("/webhook-twilio", async (req, res) => {
     //res.sendStatus();
   } catch (error) {
     console.error("❌ WEBHOOK ERROR:", error);
-  return res.sendStatus(200); // ← CRÍTICO
+  //return res.sendStatus(200); // ← CRÍTICO
   }
 });
 
@@ -379,11 +383,12 @@ app.post("/webhook-twilio", async (req, res) => {
             ? `⏰ ${t.tipo} fuera de horario.\n✍️ Indica el motivo por WhatsApp.`
             : `✅ ${t.tipo} registrada correctamente\n🕒 ${horaActual}`
         );
+        return res.status(200).json({ mensaje: "Checada registrada" });
       } catch (e) {
         console.log(e);
         res.status(500).json({ mensaje: "Error interno" });
       }
-      res.json({ mensaje: "Checada registrada" });
+      //res.json({ mensaje: "Checada registrada" });
     });
 
     // -----------------------------------------------
