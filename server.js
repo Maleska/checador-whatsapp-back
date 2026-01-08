@@ -103,6 +103,7 @@ app.get('/webhook-twilio', (req, res) => {
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
 
+  console.log('token:', process.env.META_VERIFY_TOKEN);
   if (mode === 'subscribe' && token === process.env.META_VERIFY_TOKEN) {
     console.log('✅ Webhook de Meta verificado');
     return res.status(200).send(challenge);
