@@ -462,16 +462,16 @@ async function registrar(empleado, numero, tipo, extra = {}) {
 async function sendMessage(to, msg) {
   try {
     console.log("Enviando mensaje a", to, ":", msg);
-    // await client.messages.create({
-    //   from: process.env.TWILIO_WHATSAPP_NUMBER,
-    //   to: `whatsapp:${to}`,
-    //   body: msg
-    // });
-    const message = await client.messages.create({
-      body: msg,
+    await client.messages.create({
       from: process.env.TWILIO_WHATSAPP_NUMBER,
-      to: `whatsapp:${to}`
+      to: `whatsapp:${to}`,
+      body: msg
     });
+    // const message = await client.messages.create({
+    //   body: msg,
+    //   from: process.env.TWILIO_WHATSAPP_NUMBER,
+    //   to: `whatsapp:${to}`
+    // });
 
   } catch (e) {
     console.log("ERROR Twilio:");
