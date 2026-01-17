@@ -88,6 +88,11 @@ app.post("/webhook-whatsapp", async (req, res) => {
 
       if (text === "entrada" || text === "salida") {
         await iniciarChecada(from, empleado, text.toUpperCase());
+      }else {
+        await sendWhatsAppMessage(
+          from,
+          "❌ Comando no reconocido. Envía 'ENTRADA' o 'SALIDA' para registrar tu checada."
+        );
       }
     }
 
@@ -112,7 +117,8 @@ async function iniciarChecada(numero, empleado, tipo) {
     expiraEn
   });
 
-  const link = `https://tudominio.com/checkin.html?token=${token}`;
+  //const link = `https://tudominio.com/checkin.html?token=${token}`;
+   const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}`;
 
   await sendWhatsAppMessage(
     numero,
