@@ -310,10 +310,10 @@ app.post("/webhook-twilio", async (req, res) => {
 
     app.post('/checkin', /*upload.single('selfie'),*/ async (req, res) => {
       try {
-        console.log("CHECKIN REQUEST:", req.body);
+
         const { token, lat, lng, accuracy } = req.body;
         //if (!req.file) return res.status(403).json({ mensaje: 'Selfie obligatoria' });
-        if (accuracy > 30) return res.status(403).json({ mensaje: 'GPS impreciso' });
+        if (accuracy > 200) return res.status(403).json({ mensaje: 'GPS impreciso' });
 
         const tSnap = await db.ref(`tokens/${token}`).once('value');
         if (!tSnap.exists()) return res.status(400).json({ mensaje: 'Token inválido' });
