@@ -108,10 +108,12 @@ app.post("/webhook-whatsapp", async (req, res) => {
 
     const empleado = empleadoSnap.val();
 
+    console.log("tipo de mensaje:", type);
     if (type === "text") {
       const text = message.text.body.toLowerCase().trim();
 
       if (text === "entrada" || text === "salida") {
+        console.log(`Iniciando checada de tipo: ${text.toUpperCase()}`);
         await iniciarChecada(from, empleado, text.toUpperCase());
       }else {
         await sendWhatsAppMessage(
@@ -132,6 +134,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
 // INICIAR CHECADA
 // -----------------------------------------------
 async function iniciarChecada(numero, empleado, tipo) {
+  console.log(`Generando token para ${numero} (${tipo})`);
   const token = generarToken();
   const expiraEn = Date.now() + 2 * 60 * 1000;
 
@@ -144,7 +147,7 @@ async function iniciarChecada(numero, empleado, tipo) {
 
   //const link = `https://tudominio.com/checkin.html?token=${token}`;
    const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}`;
-
+console.log(`Enlace generado: ${link}`);
   await sendWhatsAppMessage(
     numero,
     `📍 Para registrar tu *${tipo}*, abre el enlace:\n${link}\n⏱️ Expira en 2 minutos`
