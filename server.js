@@ -166,7 +166,7 @@ app.post("/checkin", async (req, res) => {
       return res.status(400).json({ mensaje: "Datos incompletos" });
     }
 
-    if (accuracy > 40) {
+    if (accuracy > 400) {
       return res.status(403).json({ mensaje: "GPS impreciso" });
     }
 
