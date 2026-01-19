@@ -69,10 +69,16 @@ app.get("/webhook-whatsapp", (req, res) => {
 // -----------------------------------------------
 app.post("/webhook-whatsapp", async (req, res) => {
   try {
-    const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+    
+     const body = req.body;
+    const from = body.From.replace("whatsapp:", "");
+    const msgType = body.MessageType;
+    const message = body.Body ? body.Body.toLowerCase().trim() : "";
+    console.log("Mensaje recibido:", message);
+    //const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
     if (!message) return res.sendStatus(200);
 
-    const from = message.from;
+    //const from = message.from;
     const type = message.type;
 
     const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
