@@ -89,7 +89,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
     const msgType = messageObj.type;        // text, location, image, etc.
 
     //const from = message.from;
-    const type = message.type;
+    const type = messageObj.type;  
     let message = "";
 
     if (msgType === "text") {
