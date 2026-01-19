@@ -100,7 +100,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
     console.log("Contenido del mensaje:", message);
     console.log("Número:", from);
 
-    const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
+    const empleadoSnap = await db.ref(`empleados/+${from}`).once("value");
     if (!empleadoSnap.exists()) {
       console.log("Número no registrado:", from);
       await sendWhatsAppMessage(from, "❌ Tu número no está registrado.");
