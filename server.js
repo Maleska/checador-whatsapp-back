@@ -111,7 +111,7 @@ console.log("Empleado encontrado para el número:", from);
 
     console.log("tipo de mensaje:", type);
     if (type === "text") {
-      const text = message.text.body.toLowerCase().trim();
+      const text = messageObj.text.body.toLowerCase().trim();;
 
       if (text === "entrada" || text === "salida") {
         console.log(`Iniciando checada de tipo: ${text.toUpperCase()}`);
