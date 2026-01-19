@@ -314,27 +314,32 @@ app.post("/webhook-twilio", async (req, res) => {
         const { token, lat, lng, accuracy } = req.body;
         //if (!req.file) return res.status(403).json({ mensaje: 'Selfie obligatoria' });
         if (accuracy > 200) return res.status(403).json({ mensaje: 'GPS impreciso' });
-
+        
+        console.log("Token recibido:", token);
         const tSnap = await db.ref(`tokens/${token}`).once('value');
         if (!tSnap.exists()) return res.status(400).json({ mensaje: 'Token inválido' });
 
         const t = tSnap.val();
         if (Date.now() > t.expira) return res.status(403).json({ mensaje: 'Token expirado' });
 
+        console.log("busca turnos y configuración");
         const cfg = (await db.ref(`diaslaborales/${t.empresaId}`).once('value')).val();
         const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
 
         const ahora = new Date();
         const horaActual = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
 
+        console.log("Detectando turno");
         const turno = detectarTurno(horaActual, turnos);
         if (!turno) return res.status(403).json({ mensaje: 'Fuera de turno' });
 
+        console.log("Distancia y empleado");
         const distancia = calcularDistancia(lat, lng, cfg.ubicacion.lat, cfg.ubicacion.lng);
         if (distancia > cfg.ubicacion.radioMetros) {
           return res.status(403).json({ mensaje: 'Fuera de rango' });
         }
 
+        console.log("fuera de tolerancia");
         const fuera = fueraDeTolerancia(
           horaActual,
           t.tipo === 'ENTRADA' ? turno.entrada : turno.salida,
@@ -358,6 +363,7 @@ app.post("/webhook-twilio", async (req, res) => {
           timeZone: "America/Mexico_City"
         });
 
+        console.log("Registrar checada");
         await db.ref("checadas").push({
           numero: t.numero,
           empleado: empleado.nombre,
@@ -376,10 +382,12 @@ app.post("/webhook-twilio", async (req, res) => {
         }
         });
 
+        console.log("Eliminar token");
         await db.ref(`tokens/${token}`).remove();
         // res.json({ mensaje: 'Checada registrada' });
 
         // después de registrar checada
+        console.log("Enviar WhatsApp");
         await sendWhatsApp(
           t.numero,
           fuera
