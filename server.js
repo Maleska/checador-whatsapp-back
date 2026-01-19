@@ -85,7 +85,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
     }
     //const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
     //if (!message) return res.sendStatus(200);
-    const from = messageObj.from;           // número sin whatsapp:
+    const from = `+${messageObj.from}`;           // número sin whatsapp:
     const msgType = messageObj.type;        // text, location, image, etc.
 
     //const from = message.from;
