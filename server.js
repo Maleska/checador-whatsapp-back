@@ -70,17 +70,35 @@ app.get("/webhook-whatsapp", (req, res) => {
 app.post("/webhook-whatsapp", async (req, res) => {
   try {
     
-     const body = req.body;
-    //const from = body.From.replace("whatsapp:", "");
-    console.log("Body recibido:", JSON.stringify(body));
-    const msgType = body.MessageType;
-    const message = body.Body ? body.Body.toLowerCase().trim() : "";
-    console.log("Mensaje recibido:", message);
+    const body = req.body;
+
+    console.log("Body recibido:", JSON.stringify(body, null, 2));
+
+    const entry = body.entry?.[0];
+    const changes = entry?.changes?.[0];
+    const value = changes?.value;
+    const messageObj = value?.messages?.[0];
+
+    if (!messageObj) {
+      console.log("No hay mensaje");
+      return res.sendStatus(200);
+    }
     //const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-    if (!message) return res.sendStatus(200);
+    //if (!message) return res.sendStatus(200);
+    const from = messageObj.from;           // número sin whatsapp:
+    const msgType = messageObj.type;        // text, location, image, etc.
 
     //const from = message.from;
     const type = message.type;
+    let message = "";
+
+    if (msgType === "text") {
+      message = messageObj.text.body.toLowerCase().trim();
+    }
+
+    console.log("Tipo de mensaje:", msgType);
+    console.log("Contenido del mensaje:", message);
+    console.log("Número:", from);
 
     const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
     if (!empleadoSnap.exists()) {
