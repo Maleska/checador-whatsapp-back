@@ -71,7 +71,8 @@ app.post("/webhook-whatsapp", async (req, res) => {
   try {
     
      const body = req.body;
-    const from = body.From.replace("whatsapp:", "");
+    //const from = body.From.replace("whatsapp:", "");
+    console.log("Body recibido:", JSON.stringify(body));
     const msgType = body.MessageType;
     const message = body.Body ? body.Body.toLowerCase().trim() : "";
     console.log("Mensaje recibido:", message);
