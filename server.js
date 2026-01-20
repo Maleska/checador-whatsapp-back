@@ -203,21 +203,21 @@ app.post("/checkin", async (req, res) => {
 
     console.log("busca turnos y configuración");
     const cfg = (await db.ref(`diaslaborales/${t.empresaId}`).once('value')).val();
-    const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
+    //const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
 
     const ahora = new Date();
     const horaActual = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
 
     console.log("Detectando turno");
-    const turno = detectarTurno(horaActual, turnos);
+    //const turno = detectarTurno(horaActual, turnos);
 
     console.log("fuera de tolerancia");
-    const fuera = fueraDeTolerancia(
-      horaActual,
-      t.tipo === 'ENTRADA' ? turno.entrada : turno.salida,
-      cfg.tiempoTolerancia
+    // const fuera = fueraDeTolerancia(
+    //   horaActual,
+    //   t.tipo === 'ENTRADA' ? turno.entrada : turno.salida,
+    //   cfg.tiempoTolerancia
 
-    );
+    // );
 
 
     await db.ref("checadas").push({
@@ -226,7 +226,6 @@ app.post("/checkin", async (req, res) => {
       tipo: t.tipo,
       timestamp: Date.now(),
       hora: horaActual,
-      fueraTolerancia: fuera,
       dia: `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`,
       hora: horaMX.split(",")[1],
       ubicacion: { lat, lng, accuracy, distancia }
