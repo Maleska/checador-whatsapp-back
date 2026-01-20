@@ -225,9 +225,11 @@ app.post("/checkin", async (req, res) => {
 async function sendWhatsAppMessage(to, text) {
     try {
       console.log("Bearing token:", process.env.WHATSAPP_TOKEN);
+      console.log("Sending WhatsApp message to:", to);
+      console.log("Message text:", text);
           await fetch(
           
-            `https://graph.facebook.com/v17.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+            `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
             {
               method: "POST",
               headers: {
@@ -236,7 +238,7 @@ async function sendWhatsAppMessage(to, text) {
               },
               body: JSON.stringify({
                 messaging_product: "whatsapp",
-                to,
+                to: to,
                 text: { body: text }
               })
             }
