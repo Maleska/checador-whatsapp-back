@@ -239,11 +239,9 @@ async function sendWhatsAppMessage(to, text) {
               },
               body: JSON.stringify({
                 messaging_product: "whatsapp",
+                recipient_type: "individual",
                 to: to,
-                type:"template",
-                template: {
-                  name: "hello_world",
-                },
+                type:"text",
                 text: { body: text }
               })
             }
