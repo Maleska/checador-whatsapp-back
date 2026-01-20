@@ -196,12 +196,32 @@ app.post("/checkin", async (req, res) => {
     if (distancia > empresa.radioMetros) {
       return res.status(403).json({ mensaje: "Fuera de rango" });
     }
+        const fecha = new Date();
+        const horaMX = fecha.toLocaleString("es-MX", {
+          timeZone: "America/Mexico_City"
+        });
+
+                const ahora = new Date();
+        const horaActual = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+
+        console.log("fuera de tolerancia");
+        const fuera = fueraDeTolerancia(
+          horaActual,
+          t.tipo === 'ENTRADA' ? turno.entrada : turno.salida,
+          cfg.tiempoTolerancia
+
+        );
+
 
     await db.ref("checadas").push({
       numero: t.numero,
       empresaId: t.empresaId,
       tipo: t.tipo,
       timestamp: Date.now(),
+      hora: horaActual,
+      fueraTolerancia: fuera,
+        dia: `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`,
+        hora: horaMX.split(",")[1],
       ubicacion: { lat, lng, accuracy, distancia }
     });
 
@@ -219,6 +239,27 @@ app.post("/checkin", async (req, res) => {
     res.status(500).json({ mensaje: "Error interno" });
   }
 });
+
+// -----------------------------------------------
+// FUERA DE TOLERANCIA
+// -----------------------------------------------
+function fueraDeTolerancia(horaActual, horaBase, tolerancia) {
+  const [h1, m1] = horaActual.split(':').map(Number);
+  const [h2, m2] = horaBase.split(':').map(Number);
+  return (h1 * 60 + m1) > (h2 * 60 + m2 + tolerancia);
+}
+
+// -----------------------------------------------
+// DETECTAR TURNO
+// -----------------------------------------------
+
+function detectarTurno(hora, turnos = {}) {
+  for (const [id, t] of Object.entries(turnos)) {
+    if (hora >= t.entrada && hora <= t.salida) return { id, ...t };
+  }
+  return null;
+}
+
 
 // -----------------------------------------------
 // ENVIAR WHATSAPP
