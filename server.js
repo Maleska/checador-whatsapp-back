@@ -204,6 +204,9 @@ app.post("/checkin", async (req, res) => {
                 const ahora = new Date();
         const horaActual = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
 
+        console.log("Detectando turno");
+        const turno = detectarTurno(horaActual, turnos);
+
         console.log("fuera de tolerancia");
         const fuera = fueraDeTolerancia(
           horaActual,
