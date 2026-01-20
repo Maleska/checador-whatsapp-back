@@ -201,6 +201,10 @@ app.post("/checkin", async (req, res) => {
           timeZone: "America/Mexico_City"
         });
 
+         console.log("busca turnos y configuración");
+        const cfg = (await db.ref(`diaslaborales/${t.empresaId}`).once('value')).val();
+        const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
+
                 const ahora = new Date();
         const horaActual = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
 
@@ -270,7 +274,7 @@ function detectarTurno(hora, turnos = {}) {
 async function sendWhatsAppMessage(to, text) {
     try {
       console.log("Bearing token:", process.env.WHATSAPP_TOKEN);
-      console.log("Sending WhatsApp message to:", to);
+      console.log("Sending WhatsApp message to:", to.remove("+"));
       console.log("Message text:", text);
           await fetch(
           
@@ -284,7 +288,7 @@ async function sendWhatsAppMessage(to, text) {
               body: JSON.stringify({
                 messaging_product: "whatsapp",
                 recipient_type: "individual",
-                to: to,
+                to: to.remove("+"),
                 type:"text",
                 text: { body: text }
               })
