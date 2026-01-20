@@ -73,7 +73,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
 
     const body = req.body;
 
-    console.log("Body recibido:", JSON.stringify(body, null, 2));
+    //console.log("Body recibido:", JSON.stringify(body, null, 2));
 
     const entry = body.entry?.[0];
     const changes = entry?.changes?.[0];
@@ -226,6 +226,8 @@ app.post("/checkin", async (req, res) => {
       tipo: t.tipo,
       timestamp: Date.now(),
       hora: horaActual,
+      fecha: Date.now(),
+      fechahora: horaMX.split(",")[1],
       dia: `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`,
       hora: horaMX.split(",")[1],
       ubicacion: { lat, lng, accuracy, distancia }
