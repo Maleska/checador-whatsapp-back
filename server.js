@@ -223,21 +223,27 @@ app.post("/checkin", async (req, res) => {
 // ENVIAR WHATSAPP
 // -----------------------------------------------
 async function sendWhatsAppMessage(to, text) {
-  await fetch(
-    `https://graph.facebook.com/v19.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        messaging_product: "whatsapp",
-        to,
-        text: { body: text }
-      })
-    }
-  );
+    try {
+      console.log("Bearing token:", process.env.WHATSAPP_TOKEN);
+          await fetch(
+          
+            `https://graph.facebook.com/v17.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                messaging_product: "whatsapp",
+                to,
+                text: { body: text }
+              })
+            }
+          );
+  }catch (error) {
+    console.error("Error enviando mensaje WhatsApp:", error);
+  }
 }
 
 // -----------------------------------------------
