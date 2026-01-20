@@ -7,6 +7,7 @@ const admin = require("firebase-admin");
 const crypto = require("crypto");
 const cors = require("cors");
 const fetch = require("node-fetch");
+const { type } = require("os");
 
 // -----------------------------------------------
 // FIREBASE
@@ -239,6 +240,10 @@ async function sendWhatsAppMessage(to, text) {
               body: JSON.stringify({
                 messaging_product: "whatsapp",
                 to: to,
+                type:"template",
+                template: {
+                  name: "hello_world",
+                },
                 text: { body: text }
               })
             }
