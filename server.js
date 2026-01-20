@@ -70,7 +70,7 @@ app.get("/webhook-whatsapp", (req, res) => {
 // -----------------------------------------------
 app.post("/webhook-whatsapp", async (req, res) => {
   try {
-    
+
     const body = req.body;
 
     console.log("Body recibido:", JSON.stringify(body, null, 2));
@@ -90,7 +90,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
     const msgType = messageObj.type;        // text, location, image, etc.
 
     //const from = message.from;
-    const type = messageObj.type;  
+    const type = messageObj.type;
     let message = "";
 
     if (msgType === "text") {
@@ -107,7 +107,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
       await sendWhatsAppMessage(from, "❌ Tu número no está registrado.");
       return res.sendStatus(200);
     }
-console.log("Empleado encontrado para el número:", from);
+    console.log("Empleado encontrado para el número:", from);
     const empleado = empleadoSnap.val();
 
     console.log("tipo de mensaje:", type);
@@ -117,7 +117,7 @@ console.log("Empleado encontrado para el número:", from);
       if (text === "entrada" || text === "salida") {
         console.log(`Iniciando checada de tipo: ${text.toUpperCase()}`);
         await iniciarChecada(from, empleado, text.toUpperCase());
-      }else {
+      } else {
         await sendWhatsAppMessage(
           from,
           "❌ Comando no reconocido. Envía 'ENTRADA' o 'SALIDA' para registrar tu checada."
@@ -148,8 +148,8 @@ async function iniciarChecada(numero, empleado, tipo) {
   });
 
   //const link = `https://tudominio.com/checkin.html?token=${token}`;
-   const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}`;
-console.log(`Enlace generado: ${link}`);
+  const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}`;
+  console.log(`Enlace generado: ${link}`);
   await sendWhatsAppMessage(
     numero,
     `📍 Para registrar tu *${tipo}*, abre el enlace:\n${link}\n⏱️ Expira en 2 minutos`
@@ -196,28 +196,28 @@ app.post("/checkin", async (req, res) => {
     if (distancia > empresa.radioMetros) {
       return res.status(403).json({ mensaje: "Fuera de rango" });
     }
-        const fecha = new Date();
-        const horaMX = fecha.toLocaleString("es-MX", {
-          timeZone: "America/Mexico_City"
-        });
+    const fecha = new Date();
+    const horaMX = fecha.toLocaleString("es-MX", {
+      timeZone: "America/Mexico_City"
+    });
 
-         console.log("busca turnos y configuración");
-        const cfg = (await db.ref(`diaslaborales/${t.empresaId}`).once('value')).val();
-        const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
+    console.log("busca turnos y configuración");
+    const cfg = (await db.ref(`diaslaborales/${t.empresaId}`).once('value')).val();
+    const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
 
-                const ahora = new Date();
-        const horaActual = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    const ahora = new Date();
+    const horaActual = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
 
-        console.log("Detectando turno");
-        const turno = detectarTurno(horaActual, turnos);
+    console.log("Detectando turno");
+    const turno = detectarTurno(horaActual, turnos);
 
-        console.log("fuera de tolerancia");
-        const fuera = fueraDeTolerancia(
-          horaActual,
-          t.tipo === 'ENTRADA' ? turno.entrada : turno.salida,
-          cfg.tiempoTolerancia
+    console.log("fuera de tolerancia");
+    const fuera = fueraDeTolerancia(
+      horaActual,
+      t.tipo === 'ENTRADA' ? turno.entrada : turno.salida,
+      cfg.tiempoTolerancia
 
-        );
+    );
 
 
     await db.ref("checadas").push({
@@ -227,8 +227,8 @@ app.post("/checkin", async (req, res) => {
       timestamp: Date.now(),
       hora: horaActual,
       fueraTolerancia: fuera,
-        dia: `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`,
-        hora: horaMX.split(",")[1],
+      dia: `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`,
+      hora: horaMX.split(",")[1],
       ubicacion: { lat, lng, accuracy, distancia }
     });
 
@@ -272,29 +272,38 @@ function detectarTurno(hora, turnos = {}) {
 // ENVIAR WHATSAPP
 // -----------------------------------------------
 async function sendWhatsAppMessage(to, text) {
-    try {
-      console.log("Bearing token:", process.env.WHATSAPP_TOKEN);
-      console.log("Sending WhatsApp message to:", to.remove("+"));
-      console.log("Message text:", text);
-          await fetch(
-          
-            `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                messaging_product: "whatsapp",
-                recipient_type: "individual",
-                to: to.remove("+"),
-                type:"text",
-                text: { body: text }
-              })
-            }
-          );
-  }catch (error) {
+  try {
+    console.log("Bearing token:", process.env.WHATSAPP_TOKEN);
+    console.log("Sending WhatsApp message to:", to.replace("+", ""));
+    console.log("Message text:", text);
+    const response = await fetch(
+
+      `https://graph.facebook.com/v22.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          recipient_type: "individual",
+          to: to.replace("+", ""),
+          type: "text",
+          text: { body: text }
+        })
+      }
+    );
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ Error WhatsApp:", data);
+      throw new Error(data.error?.message || "Error enviando WhatsApp");
+    }
+
+    return data;
+
+  } catch (error) {
     console.error("Error enviando mensaje WhatsApp:", error);
   }
 }
