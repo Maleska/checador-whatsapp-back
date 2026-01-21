@@ -8,6 +8,7 @@ const crypto = require("crypto");
 const cors = require("cors");
 const fetch = require("node-fetch");
 const { type } = require("os");
+const tipo ="";
 
 // -----------------------------------------------
 // FIREBASE
@@ -177,6 +178,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
     // COMANDOS DE CHECADA
     // -----------------------------------------------
     console.log("tipo de mensaje:", type);
+    tipo = type;
     if (type === "text") {
       const text = messageObj.text.body.toLowerCase().trim();;
 
