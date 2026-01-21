@@ -228,22 +228,22 @@ async function iniciarChecada(numero, empleado, tipo) {
 app.post("/checkin", async (req, res) => {
   try {
     const { token, lat, lng, accuracy } = req.body;
-
+    console.log("Datos recibidos en /checkin:", req.body);
     if (!token || !lat || !lng) {
       return res.status(400).json({ mensaje: "Datos incompletos" });
     }
-
+    console.log(accuracy);
     if (accuracy > 400) {
       return res.status(403).json({ mensaje: "GPS impreciso" });
     }
-
+    console.log("busca token" + token);
     const tSnap = await db.ref(`tokens/${token}`).once("value");
     if (!tSnap.exists()) {
       return res.status(403).json({ mensaje: "Token inválido" });
     }
 
     const t = tSnap.val();
-
+    console.log("token encontrado", t);
     if (Date.now() > t.expiraEn) {
       await db.ref(`tokens/${token}`).remove();
       return res.status(403).json({ mensaje: "Token expirado" });
@@ -251,14 +251,14 @@ app.post("/checkin", async (req, res) => {
 
     const empresaSnap = await db.ref(`empresa/${t.empresaId}`).once("value");
     const empresa = empresaSnap.val();
-
+    console.log("empresa encontrada", empresa);
     const distancia = calcularDistancia(
       lat,
       lng,
       empresa.lat,
       empresa.lng
     );
-
+    console.log("distancia calculada", distancia);
     if (distancia > empresa.radioMetros) {
       return res.status(403).json({ mensaje: "Fuera de rango" });
     }
