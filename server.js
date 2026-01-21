@@ -52,9 +52,11 @@ function fueraDeTolerancia(horaActual, horaRef, tolerancia) {
   const [h2, m2] = horaRef.split(':').map(Number);
 
   const a = h1 * 60 + m1;
+  console.log("valor a", a);
   const r = h2 * 60 + m2;
-
-  return a > r + tolerancia;
+  console.log("valor r", r);
+console.log("valor tolerancia", tolerancia);
+  return a > (r + tolerancia);
 }
 
 function calcularDistancia(lat1, lon1, lat2, lon2) {
