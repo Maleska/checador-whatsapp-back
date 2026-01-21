@@ -271,7 +271,8 @@ app.post("/checkin", async (req, res) => {
     const cfgSnap = (await db.ref(`diaslaborales/${t.empresaId}`).once('value')).val();
     //const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
     console.log(cfgSnap);
-    if (!cfgSnap.exists()) {
+    
+    if (cfgSnap !== null && !cfgSnap) {
       await sendWhatsApp(numero, "❌ No hay horarios configurados.");
       return;
     }
