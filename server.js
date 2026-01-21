@@ -72,8 +72,8 @@ app.post("/webhook-whatsapp", async (req, res) => {
     const changes = entry?.changes?.[0];
     const value = changes?.value;
     const messageObj = value?.messages?.[0];
-    console.log("Mensaje recibido:", entry);
-    const text = entry;
+    console.log("Mensaje recibido:", messageObj.type);
+    const text = messageObj.type;;
 
     if (!messageObj) {
  
