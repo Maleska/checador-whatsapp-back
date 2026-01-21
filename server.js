@@ -108,7 +108,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
     // CONVERSACIÓN
     const convSnap = await db.ref(`conversaciones/${from}`).once("value");
     const conv = convSnap.val();
-console.log("Conversación actual:", conv);
+    console.log("Conversación actual:", conv);
     // -------------------------------
     // FLUJO DE JUSTIFICACIONES
     // -------------------------------
@@ -121,7 +121,7 @@ console.log("Conversación actual:", conv);
         estado: "AUTORIZADO_POR"
       });
 
-      await sendWhatsApp(from, "👤 ¿Quién autorizó tu llegada tarde?");
+      await sendWhatsAppMessage(from, "👤 ¿Quién autorizó tu llegada tarde?");
       return res.sendStatus(200);
     }
 
@@ -133,7 +133,7 @@ console.log("Conversación actual:", conv);
 
       await db.ref(`conversaciones/${from}`).remove();
 
-      await sendWhatsApp(from, "✅ Justificación registrada.");
+      await sendWhatsAppMessage(from, "✅ Justificación registrada.");
       return res.sendStatus(200);
     }
 
@@ -145,7 +145,7 @@ console.log("Conversación actual:", conv);
 
       await db.ref(`conversaciones/${from}`).remove();
 
-      await sendWhatsApp(from, "✅ Motivo de salida tarde registrado.");
+      await sendWhatsAppMessage(from, "✅ Motivo de salida tarde registrado.");
       return res.sendStatus(200);
     }
 
