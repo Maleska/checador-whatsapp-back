@@ -8,7 +8,7 @@ const crypto = require("crypto");
 const cors = require("cors");
 const fetch = require("node-fetch");
 const { type } = require("os");
-const tipo ="";
+
 
 // -----------------------------------------------
 // FIREBASE
@@ -178,7 +178,6 @@ app.post("/webhook-whatsapp", async (req, res) => {
     // COMANDOS DE CHECADA
     // -----------------------------------------------
     console.log("tipo de mensaje:", type);
-    tipo = type;
     if (type === "text") {
       const text = messageObj.text.body.toLowerCase().trim();;
 
@@ -216,7 +215,7 @@ async function iniciarChecada(numero, empleado, tipo) {
   });
 
   //const link = `https://tudominio.com/checkin.html?token=${token}`;
-  const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}`;
+  const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}tipo=${tipo}`;
   console.log(`Enlace generado: ${link}`);
   await sendWhatsAppMessage(
     numero,
@@ -229,7 +228,7 @@ async function iniciarChecada(numero, empleado, tipo) {
 // -----------------------------------------------
 app.post("/checkin", async (req, res) => {
   try {
-    const { token, lat, lng, accuracy } = req.body;
+    const { token, lat, lng, accuracy,tipo } = req.body;
     console.log("Datos recibidos en /checkin:", req.body);
     if (!token || !lat || !lng) {
       return res.status(400).json({ mensaje: "Datos incompletos" });
