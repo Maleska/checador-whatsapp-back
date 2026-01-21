@@ -36,6 +36,25 @@ app.use(cors());
 function generarToken() {
   return crypto.randomBytes(24).toString("hex");
 }
+// -----------------------------------------------
+// Es finm de semana
+// -----------------------------------------------
+function esFinDeSemana() {
+  const d = new Date().getDay();
+  return d === 0 || d === 6;
+}
+// -----------------------------------------------
+// fuera de tolerancia
+// -----------------------------------------------
+function fueraDeTolerancia(horaActual, horaRef, tolerancia) {
+  const [h1, m1] = horaActual.split(':').map(Number);
+  const [h2, m2] = horaRef.split(':').map(Number);
+
+  const a = h1 * 60 + m1;
+  const r = h2 * 60 + m2;
+
+  return a > r + tolerancia;
+}
 
 function calcularDistancia(lat1, lon1, lat2, lon2) {
   const R = 6371000;
@@ -110,6 +129,53 @@ app.post("/webhook-whatsapp", async (req, res) => {
     console.log("Empleado encontrado para el número:", from);
     const empleado = empleadoSnap.val();
 
+    // CONVERSACIÓN
+    const convSnap = await db.ref(`conversaciones/${from}`).once("value");
+    const conv = convSnap.val();
+
+    // -------------------------------
+    // FLUJO DE JUSTIFICACIONES
+    // -------------------------------
+    if (conv?.estado === "MOTIVO_ENTRADA") {
+      await db.ref(`checadas/${conv.checadaId}/justificacion`).update({
+        motivo: text
+      });
+
+      await db.ref(`conversaciones/${from}`).update({
+        estado: "AUTORIZADO_POR"
+      });
+
+      await sendWhatsApp(from, "👤 ¿Quién autorizó tu llegada tarde?");
+      return res.sendStatus(200);
+    }
+
+    if (conv?.estado === "AUTORIZADO_POR") {
+      await db.ref(`checadas/${conv.checadaId}/justificacion`).update({
+        autorizadoPor: text,
+        fecha: Date.now()
+      });
+
+      await db.ref(`conversaciones/${from}`).remove();
+
+      await sendWhatsApp(from, "✅ Justificación registrada.");
+      return res.sendStatus(200);
+    }
+
+    if (conv?.estado === "MOTIVO_SALIDA") {
+      await db.ref(`checadas/${conv.checadaId}/justificacion`).set({
+        motivo: text,
+        fecha: Date.now()
+      });
+
+      await db.ref(`conversaciones/${from}`).remove();
+
+      await sendWhatsApp(from, "✅ Motivo de salida tarde registrado.");
+      return res.sendStatus(200);
+    }
+
+    // -----------------------------------------------
+    // COMANDOS DE CHECADA
+    // -----------------------------------------------
     console.log("tipo de mensaje:", type);
     if (type === "text") {
       const text = messageObj.text.body.toLowerCase().trim();;
@@ -202,8 +268,32 @@ app.post("/checkin", async (req, res) => {
     });
 
     console.log("busca turnos y configuración");
-    const cfg = (await db.ref(`diaslaborales/${t.empresaId}`).once('value')).val();
+    const cfgSnap = (await db.ref(`diaslaborales/${t.empresaId}`).once('value')).val();
     //const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
+    if (!cfgSnap.exists()) {
+      await sendWhatsApp(numero, "❌ No hay horarios configurados.");
+      return;
+    }
+
+    const cfg = cfgSnap.val();
+    const finSemana = esFinDeSemana();
+
+    let horaEntrada = cfg.horaEntrada;
+    let horaSalida = finSemana ? cfg.horafinsemana : cfg.horaSalida;
+
+    if (finSemana && !cfg.findeSemana) {
+      await sendWhatsApp(numero, "📅 Hoy no es día laboral.");
+      return;
+    }
+
+    const horaRef = tipo === "ENTRADA" ? horaEntrada : horaSalida;
+
+    const fuera = fueraDeTolerancia(
+      horaActual,
+      horaRef,
+      cfg.tiempoTolerancia
+    );
+
 
     const ahora = new Date();
     const horaActual = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
@@ -227,6 +317,7 @@ app.post("/checkin", async (req, res) => {
       timestamp: Date.now(),
       hora: horaActual,
       fecha: Date.now(),
+      fueraTolerancia: fuera,
       fechahora: horaMX.split(",")[1],
       dia: `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`,
       hora: horaMX.split(",")[1],
@@ -234,6 +325,41 @@ app.post("/checkin", async (req, res) => {
     });
 
     await db.ref(`tokens/${token}`).remove();
+
+    // -------------------------------
+  // FLUJOS
+  // -------------------------------
+  if (fuera && tipo === "ENTRADA") {
+    await db.ref(`conversaciones/${numero}`).set({
+      estado: "MOTIVO_ENTRADA",
+      checadaId: ref.key
+    });
+
+    await sendWhatsApp(
+      numero,
+      "⏰ Llegaste tarde.\n✍️ Escribe el *motivo* de tu llegada."
+    );
+    return;
+  }
+
+  if (fuera && tipo === "SALIDA") {
+    await db.ref(`conversaciones/${numero}`).set({
+      estado: "MOTIVO_SALIDA",
+      checadaId: ref.key
+    });
+
+    await sendWhatsApp(
+      numero,
+      "⏰ Salida fuera de horario.\n✍️ Indica el motivo."
+    );
+    return;
+  }
+
+  // await sendWhatsApp(
+  //   numero,
+  //   `✅ ${tipo} registrada correctamente a las ${horaActual}`
+  // );
+
 
     await sendWhatsAppMessage(
       t.numero,
