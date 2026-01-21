@@ -272,7 +272,7 @@ app.post("/checkin", async (req, res) => {
     console.log("busca turnos y configuración");
     const cfgSnap = (await db.ref(`diaslaborales/${t.empresaId}`).once('value'));
     //const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
-    console.log(cfgSnap);
+ 
     
     if (cfgSnap !== null && !cfgSnap) {
       await sendWhatsApp(numero, "❌ No hay horarios configurados.");
@@ -332,7 +332,7 @@ app.post("/checkin", async (req, res) => {
     // -------------------------------
   // FLUJOS
   // -------------------------------
-  if (fuera && tipo === "ENTRADA") {
+  if (fuera && tipo.toUpperCase() === "ENTRADA") {
     await db.ref(`conversaciones/${numero}`).set({
       estado: "MOTIVO_ENTRADA",
       checadaId: ref.key
@@ -345,7 +345,7 @@ app.post("/checkin", async (req, res) => {
     return;
   }
 
-  if (fuera && tipo === "SALIDA") {
+  if (fuera && tipo.toUpperCase() === "SALIDA") {
     await db.ref(`conversaciones/${numero}`).set({
       estado: "MOTIVO_SALIDA",
       checadaId: ref.key
