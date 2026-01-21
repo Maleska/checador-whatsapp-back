@@ -48,6 +48,8 @@ function esFinDeSemana() {
 // fuera de tolerancia
 // -----------------------------------------------
 function fueraDeTolerancia(horaActual, horaRef, tolerancia) {
+  console.log("hora actual recibida", horaActual);
+  console.log("hora referencia recibida", horaRef);
   const [h1, m1] = horaActual.split(':').map(Number);
   const [h2, m2] = horaRef.split(':').map(Number);
 
@@ -103,7 +105,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
     const messageObj = value?.messages?.[0];
 
     if (!messageObj) {
-      console.log("No hay mensaje");
+ 
       return res.sendStatus(200);
     }
     //const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
@@ -119,17 +121,15 @@ app.post("/webhook-whatsapp", async (req, res) => {
       message = messageObj.text.body.toLowerCase().trim();
     }
 
-    console.log("Tipo de mensaje:", msgType);
-    console.log("Contenido del mensaje:", message);
-    console.log("Número:", from);
+    // console.log("Tipo de mensaje:", msgType);
+    // console.log("Contenido del mensaje:", message);
+    // console.log("Número:", from);
 
     const empleadoSnap = await db.ref(`empleados/${from}`).once("value");
     if (!empleadoSnap.exists()) {
-      console.log("Número no registrado:", from);
       await sendWhatsAppMessage(from, "❌ Tu número no está registrado.");
       return res.sendStatus(200);
     }
-    console.log("Empleado encontrado para el número:", from);
     const empleado = empleadoSnap.val();
 
     // CONVERSACIÓN
@@ -269,11 +269,10 @@ app.post("/checkin", async (req, res) => {
       timeZone: "America/Mexico_City"
     });
 
-    console.log("busca turnos y configuración");
+    
     const cfgSnap = (await db.ref(`diaslaborales/${t.empresaId}`).once('value'));
     //const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
  
-    
     if (cfgSnap !== null && !cfgSnap) {
       await sendWhatsApp(numero, "❌ No hay horarios configurados.");
       return;
