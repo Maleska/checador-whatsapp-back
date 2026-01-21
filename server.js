@@ -356,10 +356,10 @@ function fueraDeTolerancia(horaActual, horaBase, tolerancia) {
   const [h2, m2] = horaBase.split(':').map(Number);
   console.log("h1,m1", h1, m1);
   console.log("h2,m2", h2, m2);
-  console.log("valor hora actual en minutos", (parseInt(h1) * 60 + parseInt(m1.split(' ')[0])));
-  console.log("valor hora base en minutos + tolerancia", (parseInt(h2) * 60 + parseInt(m2.split(' ')[0]) + parseInt(tolerancia)));
+  console.log("valor hora actual en minutos", (parseInt(h1) * 60 + parseInt(m1.split(" ")[0])));
+  console.log("valor hora base en minutos + tolerancia", (parseInt(h2) * 60 + parseInt(m2.split(" ")[0]) + parseInt(tolerancia)));
 
-  return (parseInt(h1) * 60 + parseInt(m1.split(' ')[0])) > (parseInt(h2) * 60 + parseInt(m2.split(' ')[0]) + parseInt(tolerancia));
+  return (parseInt(h1) * 60 + parseInt(m1.split(" ")[0])) > (parseInt(h2) * 60 + parseInt(m2.split(" ")[0]) + parseInt(tolerancia));
 }
 
 // -----------------------------------------------
