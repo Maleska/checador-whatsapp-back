@@ -215,7 +215,7 @@ async function iniciarChecada(numero, empleado, tipo) {
   });
 
   //const link = `https://tudominio.com/checkin.html?token=${token}`;
-  const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}tipo=${tipo}`;
+  const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}&tipo=${tipo}`;
   console.log(`Enlace generado: ${link}`);
   await sendWhatsAppMessage(
     numero,
@@ -250,6 +250,7 @@ app.post("/checkin", async (req, res) => {
       return res.status(403).json({ mensaje: "Token expirado" });
     }
 
+    console.log("busca empresa" + t.empresaId);
     const empresaSnap = await db.ref(`empresa/${t.empresaId}`).once("value");
     const empresa = empresaSnap.val();
     console.log("empresa encontrada", empresa);
