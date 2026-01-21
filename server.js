@@ -292,11 +292,12 @@ app.post("/checkin", async (req, res) => {
       return;
     }
 
-    const horaRef = tipo === "ENTRADA" ? horaEntrada : horaSalida;
-
+    const horaRef = tipo.toUpperCase() === "ENTRADA" ? horaEntrada : horaSalida;
+    console.log("hora referencia seleccionada:", horaRef);
     console.log("hora actual:", horaActual);
     console.log("hora referencia:", horaRef);
     console.log("tolerancia:", cfg.tiempoTolerancia);
+
     const fuera = fueraDeTolerancia(
       horaActual,
       horaRef,
@@ -328,7 +329,6 @@ app.post("/checkin", async (req, res) => {
       ubicacion: { lat, lng, accuracy, distancia }
     });
 
-    console.log("elimina token");
     await db.ref(`tokens/${token}`).remove();
 
     // -------------------------------
