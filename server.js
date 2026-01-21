@@ -356,7 +356,7 @@ function fueraDeTolerancia(horaActual, horaBase, tolerancia) {
   console.log("valor hora actual en minutos", (parseInt(h1) * 60 )+ parseInt(m1));
   console.log("valor hora base en minutos + tolerancia", (parseInt(h2) * 60) + parseInt(m2) + parseInt(tolerancia));
 
-  return (parseInt(h1) * 60) + parseInt(m1) < (parseInt(h2) * 60 + parseInt(m2) + parseInt(tolerancia));
+  return (parseInt(h1) * 60) + parseInt(m1) > (parseInt(h2) * 60 + parseInt(m2) + parseInt(tolerancia));
 }
 
 // -----------------------------------------------
