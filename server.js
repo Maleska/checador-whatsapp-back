@@ -280,7 +280,7 @@ app.post("/checkin", async (req, res) => {
     // );
 
 
-    await db.ref("checadas").push({
+   const checadaRef = await db.ref("checadas").push({
       numero: t.numero,
       empresaId: t.empresaId,
       tipo: t.tipo,
@@ -303,7 +303,7 @@ app.post("/checkin", async (req, res) => {
   if (fuera && tipo.toUpperCase() === "ENTRADA") {
     await db.ref(`conversaciones/${t.numero}`).set({
       estado: "MOTIVO_ENTRADA",
-      checadaId: ref.key
+      checadaId: checadaRef.key
     });
 
     await sendWhatsApp(
@@ -316,7 +316,7 @@ app.post("/checkin", async (req, res) => {
   if (fuera && tipo.toUpperCase() === "SALIDA") {
     await db.ref(`conversaciones/${t.numero}`).set({
       estado: "MOTIVO_SALIDA",
-      checadaId: ref.key
+      checadaId: checadaRef.key
     });
 
     await sendWhatsApp(
