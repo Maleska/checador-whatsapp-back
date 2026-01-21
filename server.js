@@ -270,6 +270,7 @@ app.post("/checkin", async (req, res) => {
     console.log("busca turnos y configuración");
     const cfgSnap = (await db.ref(`diaslaborales/${t.empresaId}`).once('value')).val();
     //const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
+    console.log(cfgSnap);
     if (!cfgSnap.exists()) {
       await sendWhatsApp(numero, "❌ No hay horarios configurados.");
       return;
