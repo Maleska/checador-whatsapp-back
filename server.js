@@ -279,7 +279,10 @@ app.post("/checkin", async (req, res) => {
       return;
     }
 
-    const cfg = cfgSnap;
+    const ahora = new Date();
+    const horaActual = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+
+    const cfg = cfgSnap.val();
     const finSemana = esFinDeSemana();
 
     let horaEntrada = cfg.horaEntrada;
@@ -297,10 +300,6 @@ app.post("/checkin", async (req, res) => {
       horaRef,
       cfg.tiempoTolerancia
     );
-
-
-    const ahora = new Date();
-    const horaActual = ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
 
     console.log("Detectando turno");
     //const turno = detectarTurno(horaActual, turnos);
