@@ -327,11 +327,13 @@ app.post("/checkin", async (req, res) => {
       ubicacion: { lat, lng, accuracy, distancia }
     });
 
+    console.log("elimina token");
     await db.ref(`tokens/${token}`).remove();
 
     // -------------------------------
   // FLUJOS
   // -------------------------------
+  console.log("Manejo de flujos según tolerancia " + fuera + " y tipo " + tipo);
   if (fuera && tipo.toUpperCase() === "ENTRADA") {
     await db.ref(`conversaciones/${numero}`).set({
       estado: "MOTIVO_ENTRADA",
