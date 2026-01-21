@@ -311,7 +311,7 @@ app.post("/checkin", async (req, res) => {
     });
 
     await sendWhatsAppMessage(
-      numero,
+      t.numero,
       "⏰ Llegaste tarde.\n✍️ Escribe el *motivo* de tu llegada."
     );
     return;
@@ -324,7 +324,7 @@ app.post("/checkin", async (req, res) => {
     });
 
     await sendWhatsAppMessage(
-      numero,
+      t.numero,
       "⏰ Salida fuera de horario.\n✍️ Indica el motivo."
     );
     return;
