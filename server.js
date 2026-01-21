@@ -306,7 +306,7 @@ app.post("/checkin", async (req, res) => {
       checadaId: checadaRef.key
     });
 
-    await sendWhatsApp(
+    await sendWhatsAppMessage(
       numero,
       "⏰ Llegaste tarde.\n✍️ Escribe el *motivo* de tu llegada."
     );
@@ -319,7 +319,7 @@ app.post("/checkin", async (req, res) => {
       checadaId: checadaRef.key
     });
 
-    await sendWhatsApp(
+    await sendWhatsAppMessage(
       numero,
       "⏰ Salida fuera de horario.\n✍️ Indica el motivo."
     );
