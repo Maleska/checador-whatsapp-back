@@ -72,8 +72,8 @@ app.post("/webhook-whatsapp", async (req, res) => {
     const changes = entry?.changes?.[0];
     const value = changes?.value;
     const messageObj = value?.messages?.[0];
-    console.log("Mensaje recibido:", messageObj.type);
-    const text = messageObj.type;;
+    console.log("Mensaje recibido:", messageObj.text.body.toLowerCase().trim());
+    const text = messageObj.text.body.toLowerCase().trim();
 
     if (!messageObj) {
  
@@ -152,7 +152,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
     // -----------------------------------------------
     console.log("tipo de mensaje:", type);
     if (type === "text") {
-      const text = messageObj.text.body.toLowerCase().trim();;
+      const text = messageObj.text.body.toLowerCase().trim();
 
       if (text === "entrada" || text === "salida") {
         console.log(`Iniciando checada de tipo: ${text.toUpperCase()}`);
