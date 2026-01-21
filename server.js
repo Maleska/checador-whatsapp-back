@@ -216,7 +216,7 @@ async function iniciarChecada(numero, empleado, tipo) {
 
   //const link = `https://tudominio.com/checkin.html?token=${token}`;
   const link = `https://checador-7bc7c.web.app/checkin.html?token=${token}&tipo=${tipo}`;
-  console.log(`Enlace generado: ${link}`);
+
   await sendWhatsAppMessage(
     numero,
     `📍 Para registrar tu *${tipo}*, abre el enlace:\n${link}\n⏱️ Expira en 2 minutos`
@@ -229,31 +229,29 @@ async function iniciarChecada(numero, empleado, tipo) {
 app.post("/checkin", async (req, res) => {
   try {
     const { token, lat, lng, accuracy,tipo } = req.body;
-    console.log("Datos recibidos en /checkin:", req.body);
+    
     if (!token || !lat || !lng) {
       return res.status(400).json({ mensaje: "Datos incompletos" });
     }
-    console.log(accuracy);
+   
     if (accuracy > 400) {
       return res.status(403).json({ mensaje: "GPS impreciso" });
     }
-    console.log("busca token" + token);
+  
     const tSnap = await db.ref(`tokens/${token}`).once("value");
     if (!tSnap.exists()) {
       return res.status(403).json({ mensaje: "Token inválido" });
     }
 
     const t = tSnap.val();
-    console.log("token encontrado", t);
+
     if (Date.now() > t.expiraEn) {
       await db.ref(`tokens/${token}`).remove();
       return res.status(403).json({ mensaje: "Token expirado" });
     }
 
-    console.log("busca empresa" + t.empresaId);
     const empresaSnap = await db.ref(`empresa/${t.empresaId}`).once("value");
     const empresa = empresaSnap.val();
-    console.log("empresa encontrada", empresa);
     const distancia = calcularDistancia(
       lat,
       lng,
@@ -295,16 +293,18 @@ app.post("/checkin", async (req, res) => {
 
     const horaRef = tipo === "ENTRADA" ? horaEntrada : horaSalida;
 
+    console.log("hora actual:", horaActual);
+    console.log("hora referencia:", horaRef);
+    console.log("tolerancia:", cfg.tiempoTolerancia);
     const fuera = fueraDeTolerancia(
       horaActual,
       horaRef,
       cfg.tiempoTolerancia
     );
 
-    console.log("Detectando turno");
     //const turno = detectarTurno(horaActual, turnos);
 
-    console.log("fuera de tolerancia");
+    console.log("fuera de tolerancia " + fuera);
     // const fuera = fueraDeTolerancia(
     //   horaActual,
     //   t.tipo === 'ENTRADA' ? turno.entrada : turno.salida,
