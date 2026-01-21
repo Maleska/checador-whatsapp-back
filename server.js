@@ -268,7 +268,7 @@ app.post("/checkin", async (req, res) => {
     });
 
     console.log("busca turnos y configuración");
-    const cfgSnap = (await db.ref(`diaslaborales/${t.empresaId}`).once('value')).val();
+    const cfgSnap = (await db.ref(`diaslaborales/${t.empresaId}`).once('value'));
     //const turnos = (await db.ref(`turnos/${t.empresaId}`).once('value')).val();
     console.log(cfgSnap);
     
@@ -277,7 +277,7 @@ app.post("/checkin", async (req, res) => {
       return;
     }
 
-    const cfg = cfgSnap.val();
+    const cfg = cfgSnap;
     const finSemana = esFinDeSemana();
 
     let horaEntrada = cfg.horaEntrada;
