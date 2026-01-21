@@ -45,37 +45,6 @@ function esFinDeSemana() {
   return d === 0 || d === 6;
 }
 // -----------------------------------------------
-// fuera de tolerancia
-// -----------------------------------------------
-function fueraDeTolerancia(horaActual, horaRef, tolerancia) {
-  console.log("hora actual recibida", horaActual);
-  console.log("hora referencia recibida", horaRef);
-  const [h1, m1] = horaActual.split(':').map(Number);
-  const [h2, m2] = horaRef.split(':').map(Number);
-
-  const a = h1 * 60 + m1;
-  console.log("valor a", a);
-  const r = h2 * 60 + m2;
-  console.log("valor r", r);
-console.log("valor tolerancia", tolerancia);
-  return a > (r + tolerancia);
-}
-
-function calcularDistancia(lat1, lon1, lat2, lon2) {
-  const R = 6371000;
-  const rad = Math.PI / 180;
-  const dLat = (lat2 - lat1) * rad;
-  const dLon = (lon2 - lon1) * rad;
-
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
-    Math.sin(dLon / 2) ** 2;
-
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-// -----------------------------------------------
 // WEBHOOK VERIFY
 // -----------------------------------------------
 app.get("/webhook-whatsapp", (req, res) => {
@@ -293,10 +262,6 @@ app.post("/checkin", async (req, res) => {
     }
 
     const horaRef = tipo.toUpperCase() === "ENTRADA" ? horaEntrada : horaSalida;
-    console.log("hora referencia seleccionada:", horaRef);
-    console.log("hora actual:", horaActual);
-    console.log("hora referencia:", horaRef);
-    console.log("tolerancia:", cfg.tiempoTolerancia);
 
     const fuera = fueraDeTolerancia(
       horaActual,
@@ -335,7 +300,7 @@ app.post("/checkin", async (req, res) => {
   // FLUJOS
   // -------------------------------
   console.log("Manejo de flujos según tolerancia " + fuera + " y tipo " + tipo);
-  if (fuera && tipo.toUpperCase() === "ENTRADA") {
+  if (!fuera && tipo.toUpperCase() === "ENTRADA") {
     await db.ref(`conversaciones/${numero}`).set({
       estado: "MOTIVO_ENTRADA",
       checadaId: ref.key
@@ -348,7 +313,7 @@ app.post("/checkin", async (req, res) => {
     return;
   }
 
-  if (fuera && tipo.toUpperCase() === "SALIDA") {
+  if (!fuera && tipo.toUpperCase() === "SALIDA") {
     await db.ref(`conversaciones/${numero}`).set({
       estado: "MOTIVO_SALIDA",
       checadaId: ref.key
@@ -384,9 +349,46 @@ app.post("/checkin", async (req, res) => {
 // FUERA DE TOLERANCIA
 // -----------------------------------------------
 function fueraDeTolerancia(horaActual, horaBase, tolerancia) {
+  console.log("hora actual recibida", horaActual);
+  console.log("hora base recibida", horaBase);
+  console.log("tolerancia recibida", tolerancia);
   const [h1, m1] = horaActual.split(':').map(Number);
   const [h2, m2] = horaBase.split(':').map(Number);
+  console.log("valor hora actual en minutos", (h1 * 60 + m1));
+  console.log("valor hora base en minutos + tolerancia", (h2 * 60 + m2 + tolerancia));
+  
   return (h1 * 60 + m1) > (h2 * 60 + m2 + tolerancia);
+}
+
+// -----------------------------------------------
+// fuera de tolerancia
+// -----------------------------------------------
+// function fueraDeTolerancia(horaActual, horaRef, tolerancia) {
+//   console.log("hora actual recibida", horaActual);
+//   console.log("hora referencia recibida", horaRef);
+//   const [h1, m1] = horaActual.split(':').map(Number);
+//   const [h2, m2] = horaRef.split(':').map(Number);
+
+//   const a = h1 * 60 + m1;
+//   console.log("valor a", a);
+//   const r = h2 * 60 + m2;
+//   console.log("valor r", r);
+//   console.log("valor tolerancia", tolerancia);
+//   return a > (r + tolerancia);
+// }
+
+function calcularDistancia(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const rad = Math.PI / 180;
+  const dLat = (lat2 - lat1) * rad;
+  const dLon = (lon2 - lon1) * rad;
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * rad) * Math.cos(lat2 * rad) *
+    Math.sin(dLon / 2) ** 2;
+
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 // -----------------------------------------------
