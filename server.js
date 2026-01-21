@@ -72,14 +72,15 @@ app.post("/webhook-whatsapp", async (req, res) => {
     const changes = entry?.changes?.[0];
     const value = changes?.value;
     const messageObj = value?.messages?.[0];
-    console.log("Objeto de mensaje:", messageObj);
-    console.log("Mensaje recibido:", messageObj?.text?.body.toLowerCase().trim());
-    const text = messageObj.text.body.toLowerCase().trim();
 
     if (!messageObj) {
  
       return res.sendStatus(200);
     }
+        console.log("Objeto de mensaje:", messageObj);
+    console.log("Mensaje recibido:", messageObj?.text?.body.toLowerCase().trim());
+    const text = messageObj.text.body.toLowerCase().trim();
+
     //const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
     //if (!message) return res.sendStatus(200);
     const from = `+${messageObj.from}`;           // número sin whatsapp:
@@ -107,7 +108,7 @@ app.post("/webhook-whatsapp", async (req, res) => {
     // CONVERSACIÓN
     const convSnap = await db.ref(`conversaciones/${from}`).once("value");
     const conv = convSnap.val();
-
+console.log("Conversación actual:", conv);
     // -------------------------------
     // FLUJO DE JUSTIFICACIONES
     // -------------------------------
