@@ -300,8 +300,8 @@ app.post("/checkin", async (req, res) => {
   // FLUJOS
   // -------------------------------
   console.log("Manejo de flujos según tolerancia " + fuera + " y tipo " + tipo);
-  if (!fuera && tipo.toUpperCase() === "ENTRADA") {
-    await db.ref(`conversaciones/${numero}`).set({
+  if (fuera && tipo.toUpperCase() === "ENTRADA") {
+    await db.ref(`conversaciones/${t.numero}`).set({
       estado: "MOTIVO_ENTRADA",
       checadaId: ref.key
     });
@@ -313,8 +313,8 @@ app.post("/checkin", async (req, res) => {
     return;
   }
 
-  if (!fuera && tipo.toUpperCase() === "SALIDA") {
-    await db.ref(`conversaciones/${numero}`).set({
+  if (fuera && tipo.toUpperCase() === "SALIDA") {
+    await db.ref(`conversaciones/${t.numero}`).set({
       estado: "MOTIVO_SALIDA",
       checadaId: ref.key
     });
@@ -357,9 +357,9 @@ function fueraDeTolerancia(horaActual, horaBase, tolerancia) {
   console.log("h1,m1", h1, m1);
   console.log("h2,m2", h2, m2);
   console.log("valor hora actual en minutos", (parseInt(h1) * 60 + parseInt(m1)));
-  console.log("valor hora base en minutos + tolerancia", (parseInt(h2) * 60 + parseInt(m2) + tolerancia));
+  console.log("valor hora base en minutos + tolerancia", (parseInt(h2) * 60 + parseInt(m2) + parseInt(tolerancia)));
 
-  return (parseInt(h1) * 60 + parseInt(m1)) > (parseInt(h2) * 60 + parseInt(m2) + tolerancia);
+  return (parseInt(h1) * 60 + parseInt(m1)) > (parseInt(h2) * 60 + parseInt(m2) + parseInt(tolerancia));
 }
 
 // -----------------------------------------------
