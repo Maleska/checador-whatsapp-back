@@ -289,12 +289,12 @@ app.post("/checkin", async (req, res) => {
       empresaId: t.empresaId,
       tipo: t.tipo,
       timestamp: Date.now(),
-      hora: horaActual,
+      hora: horaActual.trim(),
       fecha: Date.now(),
       fueraTolerancia: fuera,
       fechahora: horaMX.split(",")[1],
       dia: `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`,
-      hora: horaMX.split(",")[1],
+      hora: horaActual.trim(),
       ubicacion: { lat, lng, accuracy, distancia }
     });
 
