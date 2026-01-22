@@ -294,7 +294,7 @@ app.post("/checkin", async (req, res) => {
       fueraTolerancia: fuera,
       fechahora: horaMX.split(",")[1],
       dia: `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`,
-      hora: horaActual.trim(),
+      hora:horaMX.split(",")[1],
       ubicacion: { lat, lng, accuracy, distancia }
     });
 
