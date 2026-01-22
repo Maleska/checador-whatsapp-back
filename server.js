@@ -289,7 +289,7 @@ app.post("/checkin", async (req, res) => {
       empresaId: t.empresaId,
       tipo: t.tipo,
       timestamp: Date.now(),
-      hora: horaActual.trim(),
+      hora:horaActual.split(" ")[0].trim() + " " + horaMX.split(" ")[1],
       fecha: Date.now(),
       fueraTolerancia: fuera,
       fechahora: horaMX.split(",")[1],
